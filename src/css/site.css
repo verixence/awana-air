@@ -198,13 +198,24 @@ html.nogl .globe-still,html:not(.js) .globe-still{display:block}
 @media (max-width:900px){.partner-grid{grid-template-columns:1fr}}
 @media (max-width:560px){.form{grid-template-columns:1fr}.form-foot .btn{width:100%}}
 
+
+/* contact us */
+.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.contact-card{display:flex;flex-direction:column;align-items:flex-start;gap:.85rem;min-height:100%;padding:2.25rem 2rem;border:1px solid var(--line);background:rgba(13,23,41,.72);text-decoration:none;transition:border-color .3s}
+.contact-card:hover{border-color:var(--gold)}
+.contact-card .i{width:26px;height:26px;color:var(--gold);flex:none}
+.contact-card small{font:500 .72rem/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.contact-card span{font:400 clamp(1.05rem,1.5vw,1.35rem)/1.3 var(--serif);color:var(--ivory);overflow-wrap:anywhere}
+@media (max-width:860px){.contact-grid{grid-template-columns:1fr}.contact-card{padding:1.75rem 1.5rem;flex-direction:row;flex-wrap:wrap;align-items:center;gap:.85rem 1.15rem}.contact-card small{flex:1 1 auto}.contact-card span{flex:1 1 100%}}
+@media (max-width:760px){.contact{padding-bottom:calc(var(--section) + .25rem)}}
+
 /* footer */
 .site-footer{border-top:1px solid var(--line);padding:5rem 0 2rem;background:rgba(5,10,20,.6)}
 .footer-top{display:grid;grid-template-columns:2fr 1fr 1.3fr 1fr;gap:2.5rem}
 .footer-tag{margin-top:1.1rem;font:italic 400 1.15rem/1.4 var(--serif);color:var(--gold-2)}
 .footer-h{font:500 .72rem/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem}
 .footer-col ul{display:grid;gap:.6rem}
-.footer-col a{color:var(--muted);text-decoration:none;font-size:.95rem;transition:color .25s}
+.footer-col a{color:var(--muted);text-decoration:none;font-size:.95rem;transition:color .25s;overflow-wrap:anywhere}
 .footer-col a:hover{color:var(--ivory)}
 .socials{display:flex!important;gap:.6rem!important}
 .socials a{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);border-radius:50%;color:var(--ivory)!important;transition:border-color .25s}
@@ -213,7 +224,7 @@ html.nogl .globe-still,html:not(.js) .globe-still{display:block}
 .credit a{color:#c3cad8;text-decoration:none;border-bottom:1px solid rgba(201,169,110,.4);transition:color .25s,border-color .25s}
 .credit a:hover{color:var(--gold-2);border-color:var(--gold-2)}
 @media (max-width:860px){.footer-top{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}}
-@media (max-width:760px){.site-footer{padding-bottom:calc(2rem + var(--bar))}}
+@media (max-width:760px){.site-footer{padding-bottom:calc(2rem + var(--bar))}.footer-top{grid-template-columns:1fr}}
 
 /* contact affordances: small bubble on desktop, slim bar on mobile (never both) */
 .wa-bubble a{position:fixed;right:1.5rem;bottom:1.5rem;z-index:40;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#0f7a3f;color:#fff;box-shadow:0 10px 24px -8px rgba(0,0,0,.6);transition:background-color .25s}

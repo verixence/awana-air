@@ -126,6 +126,7 @@ const KEYS = {
     ['#process', { x: 0.82, y: 0.24, w: 0.15, yaw: 9.0 }],
     ['.cta-band', { x: 0.13, y: 0.5, w: 0.2, yaw: 6.6 }],                // flyby beside the CTA
     ['#partner', { x: 0.24, y: 0.86, w: 0.13, yaw: 6.4 }],
+    ['#contact', { x: 0.86, y: 0.22, w: 0.12, yaw: 5.9 }],               // over the contact cards, in the right gutter
     ['END', { x: 0.7, y: 0.42, w: 0.09, yaw: 5.6 }],                     // graceful climb-out into the distance
   ],
   mobile: [
@@ -137,6 +138,7 @@ const KEYS = {
     ['#process', { x: 0.75, y: 0.86, w: 0.3, yaw: 9.5 }],
     ['.cta-band', { x: 0.5, y: 0.14, w: 0.36, yaw: 12.6 }],
     ['#partner', { x: 0.78, y: 0.12, w: 0.26, yaw: 15.5 }],
+    ['#contact', { x: 0.8, y: 0.12, w: 0.24, yaw: 15.2 }],               // above the contact cards, clear of the mobile bar
     ['END', { x: 0.5, y: 0.4, w: 0.16, yaw: 12.2 }],
   ],
 };

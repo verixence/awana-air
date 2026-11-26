@@ -30,6 +30,7 @@ const ICONS = {
   ICON_KEY: ic('<path d="M10 40 V18 L24 8 L38 18 V40 Z"/><path d="M19 40 V29 H29 V40"/><path d="M17 20 H19 M23 20 H25 M29 20 H31"/>', 'aud-svg'),
   WA_ICON: `<svg class="i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.4-.2Z"/></svg>`,
   PHONE_ICON: `<svg class="i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2Z"/></svg>`,
+  MAIL_ICON: `<svg class="i" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 5.5A1.5 1.5 0 0 1 4.5 4h15A1.5 1.5 0 0 1 21 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5v-13Zm1.7.5 7.3 5.1L19.3 6H4.7ZM20 7.7l-7.5 5.2a.9.9 0 0 1-1 0L4 7.7V18.5h16V7.7Z"/></svg>`,
   IG_ICON: `<svg class="i" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1" fill="currentColor" stroke="none"/></svg>`,
   FB_ICON: `<svg class="i" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path fill="currentColor" d="M13.5 21v-7.5H16l.4-3h-2.9V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6V21h3.1Z"/></svg>`,
 };
@@ -82,6 +83,7 @@ const JSONLD = JSON.stringify({
   url: SITE_URL + '/',
   logo: SITE_URL + '/icon-512.png',
   telephone: '+91-95403-60060',
+  email: 'awanaair.official@gmail.com',
   contactPoint: [{ '@type': 'ContactPoint', telephone: '+91-95403-60060', contactType: 'sales', availableLanguage: ['en'] }],
   sameAs: ['https://www.instagram.com/awana_air', 'https://www.facebook.com/share/19qmNAzfaX/', 'https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06'],
   makesOffer: ['Private Jet Charters', 'Helicopter Charters', 'Air Ambulance Services', 'Regular Charter Services'].map((n) => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: n } })),

@@ -1,0 +1,658 @@
+{
+  "url": "http://127.0.0.1:39855",
+  "date": "2026-11-26T06:41:00.683Z",
+  "passed": 130,
+  "failed": 0,
+  "results": [
+    {
+      "name": "chromium/desktop status 200",
+      "pass": true,
+      "info": 200
+    },
+    {
+      "name": "chromium/desktop motion class",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop hero 3D rendered",
+      "pass": true,
+      "info": "{\"motion\":true,\"heroCanvas\":true,\"heroReady\":true,\"globeReady\":true,\"dpr\":1}"
+    },
+    {
+      "name": "chromium/desktop globe rendered",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop DPR capped at 1.5",
+      "pass": true,
+      "info": 1
+    },
+    {
+      "name": "chromium/desktop no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":1440,\"iw\":1440}"
+    },
+    {
+      "name": "chromium/desktop title",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop meta/og/twitter/canonical/icon",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop JSON-LD Organization",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop external links open new tab with noopener",
+      "pass": true,
+      "info": "[]"
+    },
+    {
+      "name": "chromium/desktop tel links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop wa.me links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop social WhatsApp channel",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop social Instagram",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop social Facebook",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop in-page anchors resolve",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop footer credit \"Powered by Amersphere.com\"",
+      "pass": true,
+      "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
+    },
+    {
+      "name": "chromium/desktop floating WhatsApp button",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop mobile bar hidden",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop empty form blocked with 6 errors",
+      "pass": true,
+      "info": "name,business,type,city,phone,service"
+    },
+    {
+      "name": "chromium/desktop invalid phone blocked",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop form opens wa.me/919540360060",
+      "pass": true,
+      "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
+    },
+    {
+      "name": "chromium/desktop form text prefilled exactly",
+      "pass": true,
+      "info": "\"Hello AWANA AIR, I'd like to become a partner.\\n\\nName: Asha Rao\\nBusiness name: Skyline Tours & Travels\\nBusiness type: Tour & travel agency\\nCity: Jaipur\\nPhone: +91 98765 43210\\nService of interest: Helicopter Charters\\nMessage: Group of 6 for a wedding, 3 days.\""
+    },
+    {
+      "name": "chromium/desktop axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop reduced motion: no motion/lenis, no hero WebGL, static fallback, content visible, no marquee",
+      "pass": true,
+      "info": "{\"motion\":false,\"lenis\":false,\"heroCanvas\":false,\"fallback\":\"1\",\"hidden\":0,\"marquee\":\"none\"}"
+    },
+    {
+      "name": "chromium/desktop reduced motion axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop reduced motion no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/desktop no-WebGL: static hero + globe fallbacks, no errors",
+      "pass": true,
+      "info": "{\"hero\":false,\"globe\":false,\"fb\":\"1\",\"gfb\":\"1\"}"
+    },
+    {
+      "name": "chromium/mobile status 200",
+      "pass": true,
+      "info": 200
+    },
+    {
+      "name": "chromium/mobile motion class",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile hero 3D rendered",
+      "pass": true,
+      "info": "{\"motion\":true,\"heroCanvas\":true,\"heroReady\":true,\"globeReady\":true,\"dpr\":1.2487179487179487}"
+    },
+    {
+      "name": "chromium/mobile globe rendered",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile DPR capped at 1.5",
+      "pass": true,
+      "info": 1.2487179487179487
+    },
+    {
+      "name": "chromium/mobile no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":390,\"iw\":390}"
+    },
+    {
+      "name": "chromium/mobile title",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile meta/og/twitter/canonical/icon",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile JSON-LD Organization",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile external links open new tab with noopener",
+      "pass": true,
+      "info": "[]"
+    },
+    {
+      "name": "chromium/mobile tel links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile wa.me links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile social WhatsApp channel",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile social Instagram",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile social Facebook",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile in-page anchors resolve",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile footer credit \"Powered by Amersphere.com\"",
+      "pass": true,
+      "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
+    },
+    {
+      "name": "chromium/mobile floating WhatsApp button",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile mobile bar shown",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile empty form blocked with 6 errors",
+      "pass": true,
+      "info": "name,business,type,city,phone,service"
+    },
+    {
+      "name": "chromium/mobile invalid phone blocked",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile form opens wa.me/919540360060",
+      "pass": true,
+      "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
+    },
+    {
+      "name": "chromium/mobile form text prefilled exactly",
+      "pass": true,
+      "info": "\"Hello AWANA AIR, I'd like to become a partner.\\n\\nName: Asha Rao\\nBusiness name: Skyline Tours & Travels\\nBusiness type: Tour & travel agency\\nCity: Jaipur\\nPhone: +91 98765 43210\\nService of interest: Helicopter Charters\\nMessage: Group of 6 for a wedding, 3 days.\""
+    },
+    {
+      "name": "chromium/mobile axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile reduced motion: no motion/lenis, no hero WebGL, static fallback, content visible, no marquee",
+      "pass": true,
+      "info": "{\"motion\":false,\"lenis\":false,\"heroCanvas\":false,\"fallback\":\"1\",\"hidden\":0,\"marquee\":\"none\"}"
+    },
+    {
+      "name": "chromium/mobile reduced motion axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile reduced motion no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium/mobile no-WebGL: static hero + globe fallbacks, no errors",
+      "pass": true,
+      "info": "{\"hero\":false,\"globe\":false,\"fb\":\"1\",\"gfb\":\"1\"}"
+    },
+    {
+      "name": "chromium 404 page",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium /robots.txt 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium /sitemap.xml 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium /favicon.svg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium /og-image.jpg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium /site.webmanifest 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "chromium /icon-512.png 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop status 200",
+      "pass": true,
+      "info": 200
+    },
+    {
+      "name": "webkit/desktop motion class",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop hero 3D rendered",
+      "pass": true,
+      "info": "{\"motion\":true,\"heroCanvas\":true,\"heroReady\":true,\"globeReady\":true,\"dpr\":1}"
+    },
+    {
+      "name": "webkit/desktop globe rendered",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop DPR capped at 1.5",
+      "pass": true,
+      "info": 1
+    },
+    {
+      "name": "webkit/desktop no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":1440,\"iw\":1440}"
+    },
+    {
+      "name": "webkit/desktop title",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop meta/og/twitter/canonical/icon",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop JSON-LD Organization",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop external links open new tab with noopener",
+      "pass": true,
+      "info": "[]"
+    },
+    {
+      "name": "webkit/desktop tel links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop wa.me links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop social WhatsApp channel",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop social Instagram",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop social Facebook",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop in-page anchors resolve",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop footer credit \"Powered by Amersphere.com\"",
+      "pass": true,
+      "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
+    },
+    {
+      "name": "webkit/desktop floating WhatsApp button",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop mobile bar hidden",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop empty form blocked with 6 errors",
+      "pass": true,
+      "info": "name,business,type,city,phone,service"
+    },
+    {
+      "name": "webkit/desktop invalid phone blocked",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop form opens wa.me/919540360060",
+      "pass": true,
+      "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
+    },
+    {
+      "name": "webkit/desktop form text prefilled exactly",
+      "pass": true,
+      "info": "\"Hello AWANA AIR, I'd like to become a partner.\\n\\nName: Asha Rao\\nBusiness name: Skyline Tours & Travels\\nBusiness type: Tour & travel agency\\nCity: Jaipur\\nPhone: +91 98765 43210\\nService of interest: Helicopter Charters\\nMessage: Group of 6 for a wedding, 3 days.\""
+    },
+    {
+      "name": "webkit/desktop axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop reduced motion: no motion/lenis, no hero WebGL, static fallback, content visible, no marquee",
+      "pass": true,
+      "info": "{\"motion\":false,\"lenis\":false,\"heroCanvas\":false,\"fallback\":\"1\",\"hidden\":0,\"marquee\":\"none\"}"
+    },
+    {
+      "name": "webkit/desktop reduced motion axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop reduced motion no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/desktop no-WebGL: static hero + globe fallbacks, no errors",
+      "pass": true,
+      "info": "{\"hero\":false,\"globe\":false,\"fb\":\"1\",\"gfb\":\"1\"}"
+    },
+    {
+      "name": "webkit/mobile status 200",
+      "pass": true,
+      "info": 200
+    },
+    {
+      "name": "webkit/mobile motion class",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile hero 3D rendered",
+      "pass": true,
+      "info": "{\"motion\":true,\"heroCanvas\":true,\"heroReady\":true,\"globeReady\":true,\"dpr\":1.2487179487179487}"
+    },
+    {
+      "name": "webkit/mobile globe rendered",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile DPR capped at 1.5",
+      "pass": true,
+      "info": 1.2487179487179487
+    },
+    {
+      "name": "webkit/mobile no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":390,\"iw\":390}"
+    },
+    {
+      "name": "webkit/mobile title",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile meta/og/twitter/canonical/icon",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile JSON-LD Organization",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile external links open new tab with noopener",
+      "pass": true,
+      "info": "[]"
+    },
+    {
+      "name": "webkit/mobile tel links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile wa.me links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile social WhatsApp channel",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile social Instagram",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile social Facebook",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile in-page anchors resolve",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile footer credit \"Powered by Amersphere.com\"",
+      "pass": true,
+      "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
+    },
+    {
+      "name": "webkit/mobile floating WhatsApp button",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile mobile bar shown",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile empty form blocked with 6 errors",
+      "pass": true,
+      "info": "name,business,type,city,phone,service"
+    },
+    {
+      "name": "webkit/mobile invalid phone blocked",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile form opens wa.me/919540360060",
+      "pass": true,
+      "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
+    },
+    {
+      "name": "webkit/mobile form text prefilled exactly",
+      "pass": true,
+      "info": "\"Hello AWANA AIR, I'd like to become a partner.\\n\\nName: Asha Rao\\nBusiness name: Skyline Tours & Travels\\nBusiness type: Tour & travel agency\\nCity: Jaipur\\nPhone: +91 98765 43210\\nService of interest: Helicopter Charters\\nMessage: Group of 6 for a wedding, 3 days.\""
+    },
+    {
+      "name": "webkit/mobile axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile reduced motion: no motion/lenis, no hero WebGL, static fallback, content visible, no marquee",
+      "pass": true,
+      "info": "{\"motion\":false,\"lenis\":false,\"heroCanvas\":false,\"fallback\":\"1\",\"hidden\":0,\"marquee\":\"none\"}"
+    },
+    {
+      "name": "webkit/mobile reduced motion axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile reduced motion no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit/mobile no-WebGL: static hero + globe fallbacks, no errors",
+      "pass": true,
+      "info": "{\"hero\":false,\"globe\":false,\"fb\":\"1\",\"gfb\":\"1\"}"
+    },
+    {
+      "name": "webkit 404 page",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit /robots.txt 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit /sitemap.xml 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit /favicon.svg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit /og-image.jpg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit /site.webmanifest 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "webkit /icon-512.png 200",
+      "pass": true,
+      "info": ""
+    }
+  ]
+}

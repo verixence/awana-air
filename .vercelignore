@@ -1,0 +1,8 @@
+node_modules/
+src/
+tests/
+screens/
+README.md
+package.json
+package-lock.json
+.gitignore

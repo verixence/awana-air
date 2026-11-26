@@ -112,6 +112,13 @@ function landDots() {
 
 // ---------- run ----------
 fs.rmSync(r('assets'), { recursive: true, force: true });
+fs.mkdirSync(r('assets/img'), { recursive: true });
+for (const f of fs.existsSync(r('src/img')) ? fs.readdirSync(r('src/img')) : []) fs.copyFileSync(r('src/img', f), r('assets/img', f));
+fs.mkdirSync(r('assets/models'), { recursive: true }); fs.mkdirSync(r('assets/env'), { recursive: true }); fs.mkdirSync(r('assets/vendor/basis'), { recursive: true });
+for (const f of fs.readdirSync(r('src/models/opt'))) fs.copyFileSync(r('src/models/opt', f), r('assets/models', f));
+fs.copyFileSync(r('src/env/golden-hour-1k.jpg'), r('assets/env/golden-hour-1k.jpg'));
+for (const f of ['basis_transcoder.js', 'basis_transcoder.wasm']) fs.copyFileSync(r('node_modules/three/examples/jsm/libs/basis', f), r('assets/vendor/basis', f));
+const HEAD_JS = (await esbuild.transform(fs.readFileSync(r('src/js/head.js'), 'utf8'), { minify: true, target: 'es2017' })).code.trim();
 fs.mkdirSync(r('assets/fonts'), { recursive: true });
 fs.copyFileSync(r('node_modules/@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2'), r('assets/fonts/outfit-latin-wght-normal.woff2'));
 fs.copyFileSync(r('node_modules/@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-wght-normal.woff2'), r('assets/fonts/bodoni-moda-latin-wght-normal.woff2'));
@@ -120,24 +127,27 @@ const dots = landDots();
 write('assets/data/land-dots.bin', Buffer.from(dots.buffer));
 
 await esbuild.build({ entryPoints: [r('src/js/main.js')], bundle: true, splitting: true, format: 'esm', minify: true, target: ['es2020', 'safari15'], outdir: r('assets/js'), chunkNames: 'chunks/[name]-[hash]', legalComments: 'none', logLevel: 'warning' });
-await esbuild.build({ entryPoints: [r('src/css/site.css')], bundle: true, minify: true, outfile: r('assets/css/site.css'), external: ['/assets/fonts/*'], logLevel: 'warning' });
+await esbuild.build({ entryPoints: [r('src/css/site.css')], bundle: true, minify: true, outfile: r('assets/css/site.css'), external: ['/assets/fonts/*', '/assets/img/*'], logLevel: 'warning' });
 
 write('favicon.svg', favicon);
 for (const [name, size] of [['favicon-32.png', 32], ['favicon-48.png', 48], ['apple-touch-icon.png', 180], ['icon-192.png', 192], ['icon-512.png', 512]]) await sharp(Buffer.from(favicon), { density: 600 }).resize(size, size).png().toFile(r(name));
 
-// OG image (procedural, uses outlines from system fonts via SVG text)
-const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">${HERO_FALLBACK.replace(/^<svg[^>]*>/, '<svg x="0" y="0" width="1200" height="630" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">').replace(/class="[^"]*"/, '')}
-<rect width="1200" height="630" fill="#040817" opacity=".35"/>
-<g transform="translate(80 120) scale(2.2)">${GRAD}${MARK_PATHS}</g>
-<text x="200" y="185" font-family="DejaVu Sans, Arial, sans-serif" font-weight="700" font-size="64" letter-spacing="10" fill="#f6efe2">AWANA <tspan fill="#e9c27f">AIR</tspan></text>
-<text x="80" y="330" font-family="DejaVu Serif, Georgia, serif" font-size="68" fill="#f6efe2">Flying Beyond</text>
-<text x="80" y="410" font-family="DejaVu Serif, Georgia, serif" font-size="68" fill="#e9c27f">The Boundaries</text>
-<text x="80" y="500" font-family="DejaVu Sans, Arial, sans-serif" font-size="28" fill="#c9d0e4">B2B aviation partnerships · Private jets · Helicopters · Air ambulance · Charters</text>
-<text x="80" y="560" font-family="DejaVu Sans, Arial, sans-serif" font-size="28" fill="#e9c27f">+91 95403 60060</text></svg>`;
-await sharp(Buffer.from(og)).jpeg({ quality: 84, mozjpeg: true }).toFile(r('og-image.jpg'));
+// OG image: dusk sky + the static jet render + type
+const ogSky = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#060c19"/><stop offset=".45" stop-color="#0b1630"/><stop offset=".75" stop-color="#2b3150"/><stop offset="1" stop-color="#5d4f5a"/></linearGradient><radialGradient id="g" cx=".75" cy=".78" r=".5"><stop offset="0" stop-color="#d6a068" stop-opacity=".45"/><stop offset="1" stop-color="#d6a068" stop-opacity="0"/></radialGradient><linearGradient id="l" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0a1222" stop-opacity=".92"/><stop offset=".55" stop-color="#0a1222" stop-opacity=".35"/><stop offset="1" stop-color="#0a1222" stop-opacity="0"/></linearGradient></defs><rect width="1200" height="630" fill="url(#s)"/><rect width="1200" height="630" fill="url(#g)"/></svg>`;
+const ogType = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><defs><linearGradient id="l" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0a1222" stop-opacity=".9"/><stop offset=".5" stop-color="#0a1222" stop-opacity=".3"/><stop offset="1" stop-color="#0a1222" stop-opacity="0"/></linearGradient></defs><rect width="1200" height="630" fill="url(#l)"/>
+<g transform="translate(80 86) scale(1.4)">${GRAD}${MARK_PATHS}</g>
+<text x="160" y="128" font-family="DejaVu Sans, Arial, sans-serif" font-size="30" letter-spacing="9" fill="#f4efe6">AWANA <tspan fill="#c9a96e">AIR</tspan></text>
+<text x="80" y="330" font-family="DejaVu Serif, Georgia, serif" font-size="70" fill="#f4efe6">Flying Beyond</text>
+<text x="80" y="412" font-family="DejaVu Serif, Georgia, serif" font-style="italic" font-size="70" fill="#e0c592">The Boundaries</text>
+<text x="80" y="500" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" letter-spacing="3" fill="#c9cfdc">B2B AVIATION PARTNERSHIPS</text>
+<text x="80" y="548" font-family="DejaVu Sans, Arial, sans-serif" font-size="24" fill="#c9a96e">+91 95403 60060</text></svg>`;
+const layers = [];
+if (fs.existsSync(r('src/img/hero-still.webp'))) layers.push({ input: await sharp(r('src/img/hero-still.webp')).resize(1200, 630, { fit: 'cover', position: 'right' }).toBuffer(), left: 0, top: 0 });
+layers.push({ input: Buffer.from(ogType), left: 0, top: 0 });
+await sharp(Buffer.from(ogSky)).composite(layers).jpeg({ quality: 84, mozjpeg: true }).toFile(r('og-image.jpg'));
 
 let html = fs.readFileSync(r('src/index.html'), 'utf8');
-const tokens = { SITE_URL, V, JSONLD, MARK, HERO_FALLBACK, GLOBE_FALLBACK, ...ICONS };
+const tokens = { SITE_URL, V, JSONLD, MARK, HEAD_JS, ...ICONS };
 html = html.replace(/\{\{(\w+)\}\}/g, (m, k) => (k in tokens ? tokens[k] : m));
 html = html.replace(/<span id="year">\d+<\/span>/, `<span id="year">${new Date().getFullYear()}</span>`);
 write('index.html', html);

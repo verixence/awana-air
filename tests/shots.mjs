@@ -1,39 +1,36 @@
-// Screenshots for the deliverables: screens/{desktop,mobile}-{hero,services,audience,partner,globe,process,cta,form,footer}.png
-import { chromium } from 'playwright';
+// v2 deliverable screenshots:
+//   screens/v2/mobile-<section>.png (iPhone 14, WebKit), screens/v2/android-<section>.png (Pixel 7, Chromium),
+//   screens/v2/desktop-<section>.png (1440x900, Chromium), screens/v2/mobile-fullpage.png
+// Section shots capture each whole section; the fixed header/bar are hidden for those so they don't cover content
+// (the real-viewport captures with the fixed UI are in screens/v2/steps/ from tests/run.mjs).
+import { chromium, webkit, devices } from 'playwright';
+import fs from 'node:fs';
 import path from 'node:path';
 import { serve } from './server.mjs';
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const BASE = process.env.BASE_URL;
 const { srv, url } = BASE ? { url: BASE } : await serve(ROOT);
+const OUT = path.join(ROOT, 'screens/v2'); fs.mkdirSync(OUT, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-const prefix = process.env.PREFIX || '';
-for (const [n, o] of [['desktop', { viewport: { width: 1440, height: 900 } }], ['mobile', { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }]]) {
-  const ctx = await b.newContext(o); const p = await ctx.newPage();
-  await p.goto(url + '/'); await p.mouse.move(400, 300).catch(() => {});
-  await p.evaluate(() => window.dispatchEvent(new Event('scroll')));
-  await p.waitForFunction(() => document.querySelector('#hero-canvas').classList.contains('ready'), null, { timeout: 25000 }).catch(() => console.log('hero not ready'));
+const SECTIONS = [['hero', '.hero'], ['intro', '.intro'], ['services', '#services'], ['partners', '#partners'], ['why', '#why'], ['globe', '#network'], ['process', '#process'], ['cta', '.cta-band'], ['form', '#partner'], ['footer', '.site-footer']];
+const T = [['mobile', webkit, devices['iPhone 14']], ['android', chromium, devices['Pixel 7']], ['desktop', chromium, { viewport: { width: 1440, height: 900 } }]];
+for (const [name, type, opts] of T) {
+  const b = await type.launch(type === chromium ? { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } : {});
+  const ctx = await b.newContext(opts); const p = await ctx.newPage();
+  await p.goto(url + '/?3d=force');
+  await p.waitForFunction(() => document.querySelector('#hero-canvas').classList.contains('ready'), null, { timeout: 30000 }).catch(() => console.log(name, 'hero 3D not ready'));
   await sleep(2500);
-  await p.screenshot({ path: `${ROOT}/screens/${prefix}${n}-hero.png` });
-  // reveal everything
-  await p.evaluate(async () => { for (let y = 0; y < document.documentElement.scrollHeight; y += 400) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); } });
-  const shot = async (sel, name, extra = 0) => {
-    await p.evaluate(([s, e]) => { const el = document.querySelector(s); scrollTo(0, el.getBoundingClientRect().top + scrollY - 70 + e); }, [sel, extra]);
-    await sleep(2200); await p.screenshot({ path: `${ROOT}/screens/${prefix}${n}-${name}.png` });
-  };
-  await shot('#services', 'services');
-  await shot('#partners', 'audience');
-  await shot('#why', 'partner');
-  await shot('#network', 'globe', n === 'mobile' ? 240 : 0);
-  await shot('#process', 'process');
-  await shot('.cta-band', 'cta');
-  await p.fill('#f-name', 'Asha Rao'); await p.fill('#f-business', 'Skyline Tours & Travels'); await p.selectOption('#f-type', 'Tour & travel agency');
-  await p.fill('#f-city', 'Jaipur'); await p.selectOption('#f-service', 'Helicopter Charters');
-  await p.click('#partner-form button[type=submit]'); // phone left empty to show validation
-  await shot('#partner-form', 'form', n === 'mobile' ? 0 : -120);
-  await p.evaluate(() => scrollTo(0, document.documentElement.scrollHeight)); await sleep(1800);
-  await p.screenshot({ path: `${ROOT}/screens/${prefix}${n}-footer.png` });
-  await ctx.close();
+  await p.screenshot({ path: `${OUT}/${name}-hero-viewport.png` });
+  await p.evaluate(async () => { for (let y = 0; y < document.documentElement.scrollHeight; y += 300) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 90)); } scrollTo(0, 0); });
+  await sleep(1500);
+  await p.addStyleTag({ content: '.site-header,.mobile-bar,.wa-bubble{visibility:hidden!important}' });
+  for (const [s, sel] of SECTIONS) {
+    if (s === 'form') { await p.fill('#f-name', 'Asha Rao'); await p.fill('#f-business', 'Skyline Tours & Travels'); await p.selectOption('#f-type', 'Tour & travel agency'); await p.fill('#f-city', 'Jaipur'); await p.selectOption('#f-service', 'Helicopter Charters'); await p.click('#partner-form button[type=submit]'); }
+    const loc = p.locator(sel).first(); await loc.scrollIntoViewIfNeeded(); await sleep(s === 'globe' || s === 'hero' ? 2000 : 500);
+    await loc.screenshot({ path: `${OUT}/${name}-${s}.png` });
+  }
+  if (name === 'mobile') { await p.evaluate(() => scrollTo(0, 0)); await sleep(1200); await p.screenshot({ path: `${OUT}/mobile-fullpage.png`, fullPage: true }); }
+  await b.close();
 }
-await b.close(); srv?.close();
-console.log('screens written');
+srv?.close();
+console.log('v2 screens written');

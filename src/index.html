@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>AWANA AIR | Flying Beyond The Boundaries | B2B Aviation Partners</title>
 <meta name="description" content="AWANA AIR partners with tour and travel agencies, event planners and hoteliers for private jet charters, helicopter charters, air ambulance services and regular charter services. Become a partner today.">
-<meta name="theme-color" content="#060c1f">
+<meta name="theme-color" content="#0a1222">
 <link rel="canonical" href="{{SITE_URL}}/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="AWANA AIR">
@@ -27,126 +27,120 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preload" href="/assets/fonts/outfit-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/bodoni-moda-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/img/hero-still.webp" as="image" type="image/webp" media="(min-width: 761px)" fetchpriority="high">
+<link rel="preload" href="/assets/img/hero-still-mobile.webp" as="image" type="image/webp" media="(max-width: 760px)" fetchpriority="high">
 <link rel="stylesheet" href="/assets/css/site.css?v={{V}}">
+<script>{{HEAD_JS}}</script>
 <script type="application/ld+json">{{JSONLD}}</script>
-<script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<div class="progress" aria-hidden="true"><span></span></div>
 
 <header class="site-header" id="top">
   <div class="wrap header-inner">
-    <a class="brand" href="#top" aria-label="AWANA AIR home">
-      {{MARK}}
-      <span class="brand-word">AWANA <em>AIR</em></span>
-    </a>
-    <nav class="nav" aria-label="Primary">
-      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-list"><span class="sr-only">Menu</span><i></i><i></i></button>
-      <ul id="nav-list">
+    <a class="brand" href="#top" aria-label="AWANA AIR home">{{MARK}}<span class="brand-word">AWANA <span>AIR</span></span></a>
+    <nav class="nav-desktop" aria-label="Primary">
+      <ul>
         <li><a href="#services">Services</a></li>
-        <li><a href="#partners">Who we partner with</a></li>
-        <li><a href="#why">Why partner</a></li>
+        <li><a href="#partners">Partners</a></li>
+        <li><a href="#why">Why AWANA AIR</a></li>
         <li><a href="#network">Charter anywhere</a></li>
         <li><a href="#process">How it works</a></li>
-        <li class="nav-cta"><a class="btn btn-gold btn-sm magnetic" href="#partner">Become a partner</a></li>
       </ul>
     </nav>
+    <div class="header-actions">
+      <a class="header-tel" href="tel:+919540360060">+91 95403 60060</a>
+      <a class="btn btn-gold btn-sm" href="#partner">Become a partner</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu"><span class="sr-only">Open menu</span><i></i><i></i></button>
+    </div>
   </div>
 </header>
 
+<div class="menu" id="menu" hidden>
+  <nav aria-label="Mobile">
+    <ul>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#partners">Partners</a></li>
+      <li><a href="#why">Why AWANA AIR</a></li>
+      <li><a href="#network">Charter anywhere</a></li>
+      <li><a href="#process">How it works</a></li>
+      <li><a href="#partner">Partner enquiry</a></li>
+    </ul>
+  </nav>
+  <a class="btn btn-gold" href="#partner">Become a partner</a>
+</div>
+
 <main id="main">
   <section class="hero" aria-labelledby="hero-title">
-    <div class="hero-sky" aria-hidden="true">
-      {{HERO_FALLBACK}}
+    <div class="hero-media" aria-hidden="true">
+      <div class="hero-sky"></div>
+      <div class="hero-still"></div>
       <div class="hero-canvas" id="hero-canvas"></div>
-      <div class="hero-vignette"></div>
+      <div class="hero-shade"></div>
     </div>
     <div class="wrap hero-content">
-      <p class="eyebrow reveal-up">B2B aviation partnerships</p>
-      <h1 id="hero-title" class="hero-title split">Flying Beyond <span class="gold">The Boundaries</span></h1>
-      <p class="hero-lead reveal-up">AWANA AIR invites tour &amp; travel agencies, event planners and hoteliers to become partners for private jet charters, helicopter charters, air ambulance services and regular charter services.</p>
-      <div class="hero-ctas reveal-up">
-        <a class="btn btn-gold magnetic" href="#partner">Become a partner <span aria-hidden="true">&rarr;</span></a>
-        <a class="btn btn-ghost magnetic" href="https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20know%20more%20about%20becoming%20a%20partner." target="_blank" rel="noopener">{{WA_ICON}} WhatsApp us</a>
+      <p class="eyebrow" data-reveal>B2B aviation partnerships</p>
+      <h1 id="hero-title" data-reveal>Flying Beyond <span>The Boundaries</span></h1>
+      <p class="hero-lead" data-reveal>Private jet, helicopter, air ambulance and charter services for tour &amp; travel agencies, event planners and hoteliers.</p>
+      <div class="hero-ctas" data-reveal>
+        <a class="btn btn-gold" href="#partner">Become a partner</a>
+        <a class="link-arrow" href="#services">Explore services <span aria-hidden="true">&rarr;</span></a>
       </div>
-      <a class="scroll-cue" href="#services"><span class="sr-only">Scroll to services</span><i aria-hidden="true"></i></a>
+    </div>
+    <ul class="hero-index wrap" aria-label="Services">
+      <li>Private Jet Charters</li><li>Helicopter Charters</li><li>Air Ambulance Services</li><li>Regular Charter Services</li>
+    </ul>
+  </section>
+
+  <section class="section intro" aria-labelledby="intro-title">
+    <div class="wrap intro-inner">
+      <p class="eyebrow" data-reveal>The AWANA AIR partnership</p>
+      <h2 id="intro-title" class="intro-statement" data-reveal>Offer your clients private aviation, with exclusive B2B partner pricing, dedicated charter assistance and seamless booking &amp; coordination.</h2>
     </div>
   </section>
 
-  <div class="marquee" aria-hidden="true">
-    <div class="marquee-track">
-      <span>Private Jet Charters</span><b>&#10022;</b><span>Helicopter Charters</span><b>&#10022;</b><span>Air Ambulance Services</span><b>&#10022;</b><span>Regular Charter Services</span><b>&#10022;</b>
-      <span>Private Jet Charters</span><b>&#10022;</b><span>Helicopter Charters</span><b>&#10022;</b><span>Air Ambulance Services</span><b>&#10022;</b><span>Regular Charter Services</span><b>&#10022;</b>
-    </div>
-  </div>
-
   <section class="section services" id="services" aria-labelledby="services-title">
     <div class="wrap">
-      <header class="section-head">
-        <p class="eyebrow reveal-up">What you can offer your clients</p>
-        <h2 id="services-title" class="split">Our services</h2>
-      </header>
-      <ul class="cards">
-        <li class="card tilt reveal-card">
-          <div class="card-glare" aria-hidden="true"></div>
-          <span class="card-num" aria-hidden="true">01</span>
-          {{ICON_JET}}
-          <h3>Private Jet Charters</h3>
-          <p>Luxury &amp; corporate travel.</p>
-        </li>
-        <li class="card tilt reveal-card">
-          <div class="card-glare" aria-hidden="true"></div>
-          <span class="card-num" aria-hidden="true">02</span>
-          {{ICON_HELI}}
-          <h3>Helicopter Charters</h3>
-          <p>Transfers, events &amp; special occasions.</p>
-        </li>
-        <li class="card tilt reveal-card">
-          <div class="card-glare" aria-hidden="true"></div>
-          <span class="card-num" aria-hidden="true">03</span>
-          {{ICON_MED}}
-          <h3>Air Ambulance Services</h3>
-          <p>Emergency medical evacuations.</p>
-        </li>
-        <li class="card tilt reveal-card">
-          <div class="card-glare" aria-hidden="true"></div>
-          <span class="card-num" aria-hidden="true">04</span>
-          {{ICON_ROUTE}}
-          <h3>Regular Charter Services</h3>
-          <p>Tailor-made travel solutions.</p>
-        </li>
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Services</p>
+        <h2 id="services-title" data-reveal>What you can offer your clients</h2>
+      </div>
+      <ul class="service-grid">
+        <li class="service" data-reveal><span class="service-n">01</span>{{ICON_JET}}<h3>Private Jet Charters</h3><p>Luxury &amp; corporate travel.</p></li>
+        <li class="service" data-reveal><span class="service-n">02</span>{{ICON_HELI}}<h3>Helicopter Charters</h3><p>Transfers, events &amp; special occasions.</p></li>
+        <li class="service" data-reveal><span class="service-n">03</span>{{ICON_MED}}<h3>Air Ambulance Services</h3><p>Emergency medical evacuations.</p></li>
+        <li class="service" data-reveal><span class="service-n">04</span>{{ICON_ROUTE}}<h3>Regular Charter Services</h3><p>Tailor-made travel solutions.</p></li>
       </ul>
     </div>
   </section>
 
   <section class="section audience" id="partners" aria-labelledby="partners-title">
     <div class="wrap">
-      <header class="section-head">
-        <p class="eyebrow reveal-up">Who we partner with</p>
-        <h2 id="partners-title" class="split">Made for businesses that serve travellers</h2>
-      </header>
-      <ul class="aud-list">
-        <li class="aud reveal-up"><span class="aud-ico" aria-hidden="true">{{ICON_GLOBE}}</span><h3>Tour &amp; travel agencies</h3></li>
-        <li class="aud reveal-up"><span class="aud-ico" aria-hidden="true">{{ICON_STAR}}</span><h3>Event planners</h3></li>
-        <li class="aud reveal-up"><span class="aud-ico" aria-hidden="true">{{ICON_KEY}}</span><h3>Hoteliers</h3></li>
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Who we partner with</p>
+        <h2 id="partners-title" data-reveal>Built for businesses that serve travellers</h2>
+      </div>
+      <ul class="aud-grid">
+        <li class="aud" data-reveal>{{ICON_GLOBE}}<h3>Tour &amp; travel agencies</h3></li>
+        <li class="aud" data-reveal>{{ICON_STAR}}<h3>Event planners</h3></li>
+        <li class="aud" data-reveal>{{ICON_KEY}}<h3>Hoteliers</h3></li>
       </ul>
     </div>
   </section>
 
   <section class="section why" id="why" aria-labelledby="why-title">
     <div class="wrap why-grid">
-      <header class="section-head why-head">
-        <p class="eyebrow reveal-up">Why partner with AWANA AIR</p>
-        <h2 id="why-title" class="split">Partner benefits</h2>
-        <div class="why-line" aria-hidden="true"><span></span></div>
-      </header>
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Why partner with us</p>
+        <h2 id="why-title" data-reveal>Partner benefits</h2>
+        <p class="section-sub" data-reveal>Let's grow together &amp; take your clients' travel experience beyond boundaries.</p>
+      </div>
       <ol class="why-list">
-        <li class="reveal-left"><span class="why-n" aria-hidden="true">01</span><span class="why-t">Exclusive B2B partner pricing</span></li>
-        <li class="reveal-left"><span class="why-n" aria-hidden="true">02</span><span class="why-t">Attractive business opportunities</span></li>
-        <li class="reveal-left"><span class="why-n" aria-hidden="true">03</span><span class="why-t">Dedicated charter assistance</span></li>
-        <li class="reveal-left"><span class="why-n" aria-hidden="true">04</span><span class="why-t">Reliable aviation solutions</span></li>
-        <li class="reveal-left"><span class="why-n" aria-hidden="true">05</span><span class="why-t">Seamless booking &amp; coordination</span></li>
+        <li data-reveal><span class="why-n">01</span>Exclusive B2B partner pricing</li>
+        <li data-reveal><span class="why-n">02</span>Attractive business opportunities</li>
+        <li data-reveal><span class="why-n">03</span>Dedicated charter assistance</li>
+        <li data-reveal><span class="why-n">04</span>Reliable aviation solutions</li>
+        <li data-reveal><span class="why-n">05</span>Seamless booking &amp; coordination</li>
       </ol>
     </div>
   </section>
@@ -154,39 +148,37 @@
   <section class="section network" id="network" aria-labelledby="network-title">
     <div class="wrap network-grid">
       <div class="network-copy">
-        <p class="eyebrow reveal-up">Your clients, wherever they need to be</p>
-        <h2 id="network-title" class="split">Charter anywhere you need</h2>
-        <p class="reveal-up">Share where your clients need to go and we will work out the charter with you.</p>
-        <a class="btn btn-gold magnetic reveal-up" href="#partner">Plan a charter with us</a>
-        <p class="fineprint reveal-up">Globe routes are illustrative only and do not represent scheduled services.</p>
+        <p class="eyebrow" data-reveal>Your clients, wherever they need to be</p>
+        <h2 id="network-title" data-reveal>Charter anywhere you need</h2>
+        <p class="section-sub" data-reveal>Share where your clients need to go and we will work out the charter with you.</p>
+        <p class="fineprint" data-reveal>Routes shown are illustrative only and do not represent scheduled services.</p>
       </div>
-      <div class="globe-wrap" id="globe" role="img" aria-label="Illustrative animated globe with glowing route arcs between world cities">
-        {{GLOBE_FALLBACK}}
+      <div class="globe" id="globe" role="img" aria-label="Illustrative globe with route arcs between world cities">
+        <div class="globe-still"></div>
       </div>
     </div>
   </section>
 
   <section class="section process" id="process" aria-labelledby="process-title">
     <div class="wrap">
-      <header class="section-head">
-        <p class="eyebrow reveal-up">How it works</p>
-        <h2 id="process-title" class="split">Enquire. Plan. Fly.</h2>
-      </header>
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>How it works</p>
+        <h2 id="process-title" data-reveal>Enquire. Plan. Fly.</h2>
+      </div>
       <ol class="steps">
-        <li class="step reveal-up"><span class="step-n" aria-hidden="true">1</span><h3>Enquire</h3><p>Send your client's requirement through the partner form, a call or WhatsApp.</p></li>
-        <li class="step reveal-up"><span class="step-n" aria-hidden="true">2</span><h3>Plan</h3><p>We coordinate the charter details and booking with you.</p></li>
-        <li class="step reveal-up"><span class="step-n" aria-hidden="true">3</span><h3>Fly</h3><p>Your clients take off and travel beyond boundaries.</p></li>
+        <li class="step" data-reveal><span class="step-n">I</span><h3>Enquire</h3><p>Send your client's requirement through the partner form, a call or WhatsApp.</p></li>
+        <li class="step" data-reveal><span class="step-n">II</span><h3>Plan</h3><p>We coordinate the charter details and booking with you.</p></li>
+        <li class="step" data-reveal><span class="step-n">III</span><h3>Fly</h3><p>Your clients take off and travel beyond boundaries.</p></li>
       </ol>
-      <div class="steps-path" aria-hidden="true"><svg viewBox="0 0 1000 60" preserveAspectRatio="none"><path d="M0 40 C 250 0, 500 60, 750 20 S 1000 30, 1000 30" /></svg></div>
     </div>
   </section>
 
   <section class="cta-band" aria-labelledby="cta-title">
-    <div class="wrap">
-      <h2 id="cta-title" class="split">Let's grow together &amp; take your clients' travel experience beyond boundaries!</h2>
-      <div class="cta-actions reveal-up">
-        <a class="btn btn-gold btn-lg magnetic" href="#partner">Become a partner</a>
-        <a class="btn btn-ghost btn-lg magnetic" href="tel:+919540360060">{{PHONE_ICON}} +91 95403 60060</a>
+    <div class="wrap cta-inner">
+      <h2 id="cta-title" data-reveal>Let's grow together &amp; take your clients' travel experience beyond boundaries!</h2>
+      <div class="cta-actions" data-reveal>
+        <a class="btn btn-gold" href="#partner">Become a partner</a>
+        <a class="btn btn-line" href="tel:+919540360060">Call +91 95403 60060</a>
       </div>
     </div>
   </section>
@@ -194,15 +186,15 @@
   <section class="section partner" id="partner" aria-labelledby="partner-title">
     <div class="wrap partner-grid">
       <div class="partner-copy">
-        <p class="eyebrow reveal-up">Partner enquiry</p>
-        <h2 id="partner-title" class="split">Become an AWANA AIR partner</h2>
-        <p class="reveal-up">Fill in your details and your enquiry opens in WhatsApp, ready to send to our team.</p>
-        <ul class="contact-list reveal-up">
+        <p class="eyebrow" data-reveal>Partner enquiry</p>
+        <h2 id="partner-title" data-reveal>Become an AWANA AIR partner</h2>
+        <p class="section-sub" data-reveal>Share your details and your enquiry opens in WhatsApp, ready to send to our team.</p>
+        <ul class="contact-list" data-reveal>
           <li><a href="tel:+919540360060">{{PHONE_ICON}}<span><small>Call</small>+91 95403 60060</span></a></li>
           <li><a href="https://wa.me/919540360060" target="_blank" rel="noopener">{{WA_ICON}}<span><small>WhatsApp</small>+91 95403 60060</span></a></li>
         </ul>
       </div>
-      <form class="form reveal-up" id="partner-form" novalidate>
+      <form class="form" id="partner-form" novalidate data-reveal>
         <div class="field">
           <label for="f-name">Your name <span aria-hidden="true">*</span></label>
           <input id="f-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="80" aria-describedby="e-name">
@@ -251,7 +243,7 @@
           <textarea id="f-message" name="message" rows="4" maxlength="1000" placeholder="Tell us about your business and your clients' travel needs"></textarea>
         </div>
         <div class="field-full form-foot">
-          <button class="btn btn-gold btn-lg magnetic" type="submit">{{WA_ICON}} Send on WhatsApp</button>
+          <button class="btn btn-gold" type="submit">{{WA_ICON}} Send on WhatsApp</button>
           <p class="form-note" id="form-status" role="status" aria-live="polite">Fields marked * are required. Submitting opens WhatsApp with your details filled in.</p>
         </div>
       </form>
@@ -262,10 +254,10 @@
 <footer class="site-footer">
   <div class="wrap footer-top">
     <div class="footer-brand">
-      <a class="brand" href="#top" aria-label="AWANA AIR, back to top">{{MARK}}<span class="brand-word">AWANA <em>AIR</em></span></a>
+      <a class="brand" href="#top" aria-label="AWANA AIR, back to top">{{MARK}}<span class="brand-word">AWANA <span>AIR</span></span></a>
       <p class="footer-tag">Flying Beyond The Boundaries</p>
     </div>
-    <nav class="footer-nav" aria-label="Footer">
+    <nav class="footer-col" aria-label="Footer">
       <h2 class="footer-h">Explore</h2>
       <ul>
         <li><a href="#services">Services</a></li>
@@ -274,14 +266,14 @@
         <li><a href="#partner">Partner enquiry</a></li>
       </ul>
     </nav>
-    <div class="footer-contact">
+    <div class="footer-col">
       <h2 class="footer-h">Contact</h2>
       <ul>
         <li><a href="tel:+919540360060">Call +91 95403 60060</a></li>
         <li><a href="https://wa.me/919540360060" target="_blank" rel="noopener">WhatsApp +91 95403 60060</a></li>
       </ul>
     </div>
-    <div class="footer-social">
+    <div class="footer-col">
       <h2 class="footer-h">Follow</h2>
       <ul class="socials">
         <li><a href="https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06" target="_blank" rel="noopener" aria-label="AWANA AIR WhatsApp channel (opens in a new tab)">{{WA_ICON}}</a></li>
@@ -296,7 +288,7 @@
   </div>
 </footer>
 
-<aside aria-label="WhatsApp chat"><a class="wa-float magnetic" href="https://wa.me/919540360060" target="_blank" rel="noopener" aria-label="Chat with AWANA AIR on WhatsApp (opens in a new tab)">{{WA_ICON}}</a></aside>
+<aside class="wa-bubble" aria-label="WhatsApp chat"><a href="https://wa.me/919540360060" target="_blank" rel="noopener" aria-label="Chat with AWANA AIR on WhatsApp (opens in a new tab)">{{WA_ICON}}</a></aside>
 <nav class="mobile-bar" aria-label="Quick contact">
   <a href="tel:+919540360060">{{PHONE_ICON}} Call</a>
   <a href="https://wa.me/919540360060" target="_blank" rel="noopener">{{WA_ICON}} WhatsApp</a>

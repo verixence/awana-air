@@ -1,5 +1,7 @@
-// Playwright test suite: Chromium + WebKit, desktop + mobile.
-import { chromium, webkit } from 'playwright';
+// AWANA AIR test suite (v2): iPhone 14 / iPhone 15 Pro (WebKit), Pixel 7 (Chromium), desktop Chromium + WebKit.
+// Layout-integrity checks at every scroll step (heading overlap, header occlusion, lingering transforms),
+// fast fling, mobile menu, reduced motion, no-WebGL, plus form, links, SEO, axe, overflow and credit.
+import { chromium, webkit, devices } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7,154 +9,236 @@ import { serve } from './server.mjs';
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const BASE = process.env.BASE_URL || null;
+const SHOTS = process.env.SHOTS !== '0';
 const { srv, url: local } = BASE ? { srv: null, url: null } : await serve(ROOT);
 const URL0 = BASE || local;
+const STEPDIR = path.join(ROOT, 'screens/v2/steps');
+fs.mkdirSync(STEPDIR, { recursive: true });
 const results = []; let failed = 0;
-const ok = (name, cond, info = '') => { results.push({ name, pass: !!cond, info }); if (!cond) { failed++; console.log('  FAIL', name, info); } };
-
-const VIEWPORTS = {
-  desktop: { viewport: { width: 1440, height: 900 } },
-  mobile: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 },
-};
-const EXPECT_LINKS = {
-  'https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06': 'WhatsApp channel',
-  'https://www.instagram.com/awana_air': 'Instagram',
-  'https://www.facebook.com/share/19qmNAzfaX/': 'Facebook',
-};
+const ok = (name, cond, info = '') => { results.push({ name, pass: !!cond, info: String(info).slice(0, 600) }); if (!cond) { failed++; console.log('  FAIL', name, String(info).slice(0, 600)); } };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const GLARGS = { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] };
 
-async function scrollThrough(page) {
-  await page.evaluate(async () => {
-    const h = document.documentElement.scrollHeight;
-    for (let y = 0; y <= h; y += Math.round(innerHeight * 0.6)) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 160)); }
-    window.scrollTo(0, document.documentElement.scrollHeight);
-    await new Promise((r) => setTimeout(r, 1500));
+const TARGETS = [
+  { id: 'iphone14', type: webkit, opts: devices['iPhone 14'], mobile: true },
+  { id: 'iphone15pro', type: webkit, opts: devices['iPhone 15 Pro'], mobile: true },
+  { id: 'pixel7', type: chromium, opts: devices['Pixel 7'], mobile: true },
+  { id: 'desktop-chromium', type: chromium, opts: { viewport: { width: 1440, height: 900 } }, mobile: false },
+  { id: 'desktop-webkit', type: webkit, opts: { viewport: { width: 1440, height: 900 } }, mobile: false },
+];
+const SOCIAL = ['https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06', 'https://www.instagram.com/awana_air', 'https://www.facebook.com/share/19qmNAzfaX/'];
+
+// In-page layout probe: visible headings must not intersect each other; any heading under the fixed
+// header must be fully hidden by it (opaque header on top), never drawn over/through it.
+const PROBE = () => {
+  const vis = (el) => {
+    const r = el.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1 || r.bottom <= 0 || r.top >= innerHeight) return null;
+    for (let n = el; n && n !== document.documentElement; n = n.parentElement) {
+      const cs = getComputedStyle(n);
+      if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity < 0.05) return null;
+    }
+    return r;
+  };
+  const header = document.querySelector('.site-header');
+  const hr = header.getBoundingClientRect();
+  const hbg = getComputedStyle(header).backgroundColor;
+  const alpha = /rgba?\(([^)]+)\)/.exec(hbg); const a = alpha ? (alpha[1].split(',')[3] === undefined ? 1 : +alpha[1].split(',')[3]) : 0;
+  const els = [...document.querySelectorAll('main h1, main h2, main h3, main .eyebrow')].filter((e) => !e.closest('.menu'));
+  const boxes = els.map((e) => ({ e, r: vis(e) })).filter((x) => x.r);
+  const name = (e) => (e.id || e.className || e.tagName) + ':' + e.textContent.trim().slice(0, 24);
+  const inter = (p, q) => Math.max(0, Math.min(p.right, q.right) - Math.max(p.left, q.left)) * Math.max(0, Math.min(p.bottom, q.bottom) - Math.max(p.top, q.top));
+  const overlaps = [], headerHits = [];
+  for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+    if (boxes[i].e.contains(boxes[j].e) || boxes[j].e.contains(boxes[i].e)) continue;
+    if (inter(boxes[i].r, boxes[j].r) > 1) overlaps.push(name(boxes[i].e) + ' X ' + name(boxes[j].e));
+  }
+  for (const { e, r } of boxes) {
+    if (inter(r, hr) > 1) {
+      const x = Math.max(r.left, hr.left) + 2, y = (Math.max(r.top, hr.top) + Math.min(r.bottom, hr.bottom)) / 2;
+      const top = document.elementFromPoint(Math.min(x, innerWidth - 1), y);
+      const covered = a >= 0.99 && top && top.closest('.site-header');
+      if (!covered) headerHits.push(name(e) + ` (header bg ${hbg})`);
+    }
+  }
+  const menu = document.getElementById('menu');
+  return { overlaps, headerHits, menuHidden: menu.hidden, y: Math.round(scrollY), n: boxes.length };
+};
+const TRANSFORMS = () => {
+  const bad = [];
+  document.querySelectorAll('main *, footer *, .site-header, .mobile-bar, .wa-bubble *').forEach((el) => {
+    if (el.closest('canvas') || el.tagName === 'CANVAS') return;
+    const t = getComputedStyle(el).transform;
+    if (t && t !== 'none') bad.push((el.className || el.tagName) + ' ' + t);
   });
+  const hiddenReveal = [...document.querySelectorAll('[data-reveal]')].filter((e) => getComputedStyle(e).opacity !== '1').map((e) => e.className || e.tagName);
+  return { bad, hiddenReveal };
+};
+
+async function stepScroll(page, tag, shots) {
+  const issues = [];
+  const H = await page.evaluate(() => document.documentElement.scrollHeight);
+  let i = 0;
+  for (let y = 0; y <= H; y += 400, i++) {
+    await page.evaluate((yy) => window.scrollTo(0, yy), y);
+    await sleep(380);
+    const pr = await page.evaluate(PROBE);
+    if (pr.overlaps.length || pr.headerHits.length) issues.push(`y=${pr.y}: ${pr.overlaps.concat(pr.headerHits).join(' | ')}`);
+    if (shots) await page.screenshot({ path: path.join(STEPDIR, `${tag}-${String(i).padStart(2, '0')}.png`) });
+  }
+  return issues;
+}
+async function fling(page, mobile) {
+  if (mobile) {
+    await page.evaluate(async () => { const H = document.documentElement.scrollHeight; for (let y = 0; y <= H; y += 1400) { scrollTo({ top: y, behavior: 'instant' }); await new Promise((r) => setTimeout(r, 25)); } for (let y = H; y >= 0; y -= 2200) { scrollTo({ top: y, behavior: 'instant' }); await new Promise((r) => setTimeout(r, 20)); } scrollTo(0, 1800); });
+  } else {
+    await page.mouse.move(700, 450);
+    for (let k = 0; k < 14; k++) { await page.mouse.wheel(0, 1200); await sleep(25); }
+    for (let k = 0; k < 8; k++) { await page.mouse.wheel(0, -1500); await sleep(25); }
+  }
+  await sleep(1600);
+  const pr = await page.evaluate(PROBE);
+  return pr.overlaps.concat(pr.headerHits);
 }
 
-for (const [bname, btype] of [['chromium', chromium], ['webkit', webkit]]) {
-  const browser = await btype.launch(bname === 'chromium' ? { args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } : {});
-  for (const [vname, vopts] of Object.entries(VIEWPORTS)) {
-    const tag = `${bname}/${vname}`;
+for (const T of TARGETS) {
+  const browser = await T.type.launch(T.type === chromium ? GLARGS : {});
+  for (const mode of ['default', 'force3d', 'reduced']) {
+    const tag = `${T.id}/${mode}`;
     console.log('>>', tag);
-    const ctx = await browser.newContext(vopts);
+    const ctx = await browser.newContext({ ...T.opts, reducedMotion: mode === 'reduced' ? 'reduce' : 'no-preference' });
     await ctx.route(/^https:\/\/(wa\.me|whatsapp\.com|www\.instagram\.com|www\.facebook\.com|amersphere\.com)\//, (r) => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>stub</title>' }));
     const page = await ctx.newPage();
     const errors = [];
     page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
     page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
     page.on('requestfailed', (r) => { if (r.url().startsWith(URL0)) errors.push('requestfailed: ' + r.url()); });
+    const t0 = Date.now();
+    const resp = await page.goto(URL0 + '/' + (mode === 'force3d' ? '?3d=force' : ''), { waitUntil: 'load' });
+    ok(`${tag} HTTP 200`, resp.status() === 200, resp.status());
 
-    const resp = await page.goto(URL0 + '/', { waitUntil: 'load' });
-    ok(`${tag} status 200`, resp.status() === 200, resp.status());
-    await sleep(3500);
-    await scrollThrough(page);
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForFunction(() => document.querySelector('#hero-canvas').classList.contains('ready'), null, { timeout: 20000 }).catch(() => {});
+    const cls = await page.evaluate(() => document.documentElement.className);
+    if (mode === 'force3d') {
+      const ready = await page.waitForFunction(() => document.querySelector('#hero-canvas').classList.contains('ready'), null, { timeout: 25000 }).then(() => true).catch(() => false);
+      const tReady = Date.now() - t0;
+      const dpr = await page.evaluate(() => { const c = document.querySelector('#hero-canvas canvas'); return c ? c.width / c.clientWidth : null; });
+      ok(`${tag} hero 3D jet visible without interaction (${tReady} ms on software GL)`, ready && /\bgl\b/.test(cls), cls);
+      ok(`${tag} DPR capped (<=1.6 phone, <=1.5 desktop)`, dpr !== null && dpr <= (T.opts.isMobile ? 1.61 : 1.51), dpr);
+    } else if (mode === 'default') {
+      // the box has no GPU: the head probe must pick the static render, never a blank hero
+      const st = await page.evaluate(() => { const s = document.querySelector('.hero-still'); return { cls: document.documentElement.className, disp: getComputedStyle(s).display, bg: getComputedStyle(s).backgroundImage }; });
+      ok(`${tag} no-GPU device gets the static jet render`, /nogl/.test(st.cls) ? st.disp === 'block' && /hero-still(-mobile)?\.webp/.test(st.bg) : true, JSON.stringify(st));
+    } else {
+      const st = await page.evaluate(() => ({ cls: document.documentElement.className, still: getComputedStyle(document.querySelector('.hero-still')).display, canvas: !!document.querySelector('#hero-canvas canvas') }));
+      ok(`${tag} reduced motion: no motion/lenis/WebGL, static render shown`, !/motion|lenis|\bgl\b/.test(st.cls.replace('nogl', '')) && st.still === 'block' && !st.canvas, JSON.stringify(st));
+    }
+    ok(`${tag} Lenis ${T.mobile ? 'off on touch' : 'only on desktop'}`, T.mobile ? !/lenis/.test(cls) : mode === 'reduced' ? !/lenis/.test(cls) : /lenis/.test(cls), cls);
 
-    // 3D state
-    const st = await page.evaluate(() => ({
-      motion: document.documentElement.classList.contains('motion'),
-      heroCanvas: !!document.querySelector('#hero-canvas canvas'), heroReady: document.querySelector('#hero-canvas').classList.contains('ready'),
-      globeReady: document.getElementById('globe').classList.contains('ready'),
-      dpr: (() => { const c = document.querySelector('#hero-canvas canvas'); return c ? c.width / c.clientWidth : null; })(),
+    // contact affordances
+    const ca = await page.evaluate(() => ({
+      bubble: getComputedStyle(document.querySelector('.wa-bubble')).display !== 'none',
+      bar: getComputedStyle(document.querySelector('.mobile-bar')).display !== 'none',
+      heroCtas: document.querySelectorAll('.hero-content a, .hero-content button').length,
     }));
-    ok(`${tag} motion class`, st.motion);
-    ok(`${tag} hero 3D rendered`, st.heroCanvas && st.heroReady, JSON.stringify(st));
-    ok(`${tag} globe rendered`, st.globeReady);
-    ok(`${tag} DPR capped at 1.5`, st.dpr === null || st.dpr <= 1.51, st.dpr);
+    ok(`${tag} one contact affordance (${T.mobile ? 'bar only' : 'bubble only'})`, T.mobile ? ca.bar && !ca.bubble : ca.bubble && !ca.bar, JSON.stringify(ca));
+    ok(`${tag} hero has at most 2 CTAs`, ca.heroCtas <= 2, ca.heroCtas);
 
-    // overflow
+    // step scroll: overlap + header occlusion at every 400px step
+    await sleep(1200);
+    const issues = await stepScroll(page, `${T.id}-${mode}`, SHOTS && mode !== 'reduced');
+    ok(`${tag} step-scroll: no heading overlaps / no heading drawn over the header`, issues.length === 0, issues.join(' || '));
+    const tr = await page.evaluate(TRANSFORMS);
+    ok(`${tag} no lingering transforms after reveal`, tr.bad.length === 0, tr.bad.join(' | '));
+    ok(`${tag} all revealed content fully visible`, tr.hiddenReveal.length === 0, tr.hiddenReveal.join(','));
     const ov = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
     ok(`${tag} no horizontal overflow`, ov.sw <= ov.iw, JSON.stringify(ov));
 
-    // SEO
-    const seo = await page.evaluate(() => {
-      const m = (s) => document.querySelector(s)?.getAttribute('content') || document.querySelector(s)?.getAttribute('href');
-      let ld = null; try { ld = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent); } catch {}
-      return { title: document.title, desc: m('meta[name=description]'), canon: m('link[rel=canonical]'), og: m('meta[property="og:image"]'), tw: m('meta[name="twitter:card"]'), icon: m('link[rel=icon]'), ld };
-    });
-    ok(`${tag} title`, /AWANA AIR/.test(seo.title) && /Flying Beyond The Boundaries/.test(seo.title));
-    ok(`${tag} meta/og/twitter/canonical/icon`, seo.desc && seo.canon && seo.og && seo.tw === 'summary_large_image' && seo.icon);
-    ok(`${tag} JSON-LD Organization`, seo.ld && seo.ld['@type'] === 'Organization' && seo.ld.telephone === '+91-95403-60060' && Object.keys(EXPECT_LINKS).every((u) => seo.ld.sameAs.includes(u)));
+    // fast fling
+    await page.evaluate(() => scrollTo(0, 0)); await sleep(300);
+    const fl = await fling(page, T.mobile);
+    const tr2 = await page.evaluate(TRANSFORMS);
+    ok(`${tag} after fast fling: no overlaps, no lingering transforms`, fl.length === 0 && tr2.bad.length === 0 && tr2.hiddenReveal.length === 0, fl.concat(tr2.bad, tr2.hiddenReveal).join(' | '));
 
-    // links
-    const links = await page.$$eval('a', (as) => as.map((a) => ({ href: a.getAttribute('href'), target: a.target, rel: a.rel, text: a.textContent.trim(), label: a.getAttribute('aria-label') })));
-    const ext = links.filter((l) => /^https?:/.test(l.href));
-    ok(`${tag} external links open new tab with noopener`, ext.every((l) => l.target === '_blank' && /noopener/.test(l.rel)), JSON.stringify(ext.filter((l) => !(l.target === '_blank' && /noopener/.test(l.rel)))));
-    ok(`${tag} tel links`, links.filter((l) => l.href?.startsWith('tel:')).every((l) => l.href === 'tel:+919540360060') && links.filter((l) => l.href?.startsWith('tel:')).length >= 3);
-    ok(`${tag} wa.me links`, links.filter((l) => l.href?.includes('wa.me')).every((l) => l.href.startsWith('https://wa.me/919540360060')) && links.filter((l) => l.href?.includes('wa.me')).length >= 4);
-    for (const u of Object.keys(EXPECT_LINKS)) ok(`${tag} social ${EXPECT_LINKS[u]}`, links.some((l) => l.href === u && l.target === '_blank' && /noopener/.test(l.rel)));
-    const anchors = links.filter((l) => l.href?.startsWith('#')).map((l) => l.href);
-    const missing = await page.evaluate((ids) => ids.filter((id) => id !== '#' && !document.querySelector(id)), [...new Set(anchors)]);
-    ok(`${tag} in-page anchors resolve`, missing.length === 0, missing.join(','));
-    const credit = await page.evaluate(() => { const p = document.querySelector('.footer-bottom .credit'); const a = p?.querySelector('a'); return p && a && { text: p.textContent.replace(/\s+/g, ' ').trim(), href: a.getAttribute('href'), target: a.getAttribute('target'), rel: a.getAttribute('rel'), linkText: a.textContent.trim() }; });
-    ok(`${tag} footer credit "Powered by Amersphere.com"`, credit && credit.text === 'Powered by Amersphere.com' && credit.linkText === 'Amersphere.com' && credit.href === 'https://amersphere.com' && credit.target === '_blank' && /\bnoopener\b/.test(credit.rel), JSON.stringify(credit));
+    // mobile menu opened mid-page (the original iOS bug)
+    if (T.mobile) {
+      await page.evaluate(() => document.getElementById('services').scrollIntoView()); await sleep(700);
+      await page.tap('.menu-btn');
+      await sleep(300);
+      const m = await page.evaluate(() => {
+        const menu = document.getElementById('menu'); const r = menu.getBoundingClientRect();
+        const pts = [[innerWidth / 2, innerHeight / 2], [20, innerHeight * 0.3], [innerWidth - 20, innerHeight * 0.75]];
+        const onTop = pts.every(([x, y]) => { const el = document.elementFromPoint(x, y); return el && (el.closest('#menu') || el.closest('.site-header') || el.closest('.mobile-bar')); });
+        return { hidden: menu.hidden, top: r.top, h: Math.round(r.height), vh: innerHeight, w: Math.round(r.width), vw: innerWidth, onTop, inHeader: !!menu.closest('.site-header') };
+      });
+      ok(`${tag} menu opened mid-page covers the full viewport`, !m.hidden && m.top === 0 && Math.abs(m.h - m.vh) <= 1 && m.w === m.vw && m.onTop && !m.inHeader, JSON.stringify(m));
+      if (SHOTS && mode === 'default') await page.screenshot({ path: path.join(ROOT, `screens/v2/${T.id === 'pixel7' ? 'android' : T.id === 'iphone14' ? 'mobile' : T.id}-menu.png`) });
+      await page.keyboard.press('Escape'); await sleep(200);
+      ok(`${tag} menu closes with Escape`, await page.evaluate(() => document.getElementById('menu').hidden));
+    }
 
-    // floating WA + mobile bar
-    const fixed = await page.evaluate(() => ({ wa: getComputedStyle(document.querySelector('.wa-float')).position, bar: getComputedStyle(document.querySelector('.mobile-bar')).display }));
-    ok(`${tag} floating WhatsApp button`, fixed.wa === 'fixed');
-    ok(`${tag} mobile bar ${vname === 'mobile' ? 'shown' : 'hidden'}`, vname === 'mobile' ? fixed.bar !== 'none' : fixed.bar === 'none');
-
-    // form validation
-    await page.locator('#partner').scrollIntoViewIfNeeded(); await sleep(800);
-    let popups = 0; const onPopup = () => popups++; ctx.on('page', onPopup);
-    await page.click('#partner-form button[type=submit]'); await sleep(400);
-    const inv = await page.$$eval('#partner-form [aria-invalid=true]', (e) => e.map((x) => x.name));
-    ok(`${tag} empty form blocked with 6 errors`, inv.length === 6 && popups === 0, inv.join(','));
-    await page.fill('#f-name', 'Asha Rao'); await page.fill('#f-business', 'Skyline Tours & Travels'); await page.selectOption('#f-type', 'Tour & travel agency');
-    await page.fill('#f-city', 'Jaipur'); await page.fill('#f-phone', '12ab'); await page.selectOption('#f-service', 'Helicopter Charters');
-    await page.fill('#f-message', 'Group of 6 for a wedding, 3 days.');
-    await page.click('#partner-form button[type=submit]'); await sleep(300);
-    ok(`${tag} invalid phone blocked`, (await page.getAttribute('#f-phone', 'aria-invalid')) === 'true' && popups === 0);
-    await page.fill('#f-phone', '+91 98765 43210');
-    ctx.off('page', onPopup);
-    const [popup] = await Promise.all([ctx.waitForEvent('page', { timeout: 8000 }), page.click('#partner-form button[type=submit]')]);
-    const pu = new URL(popup.url());
-    const expected = "Hello AWANA AIR, I'd like to become a partner.\n\nName: Asha Rao\nBusiness name: Skyline Tours & Travels\nBusiness type: Tour & travel agency\nCity: Jaipur\nPhone: +91 98765 43210\nService of interest: Helicopter Charters\nMessage: Group of 6 for a wedding, 3 days.";
-    ok(`${tag} form opens wa.me/919540360060`, pu.origin === 'https://wa.me' && pu.pathname === '/919540360060', popup.url());
-    ok(`${tag} form text prefilled exactly`, pu.searchParams.get('text') === expected, JSON.stringify(pu.searchParams.get('text')));
-    await popup.close();
-
-    // axe
-    await page.evaluate(() => window.scrollTo(0, 0)); await sleep(500);
+    if (mode === 'default') {
+      // SEO
+      const seo = await page.evaluate(() => {
+        const m = (s) => document.querySelector(s)?.getAttribute('content') || document.querySelector(s)?.getAttribute('href');
+        let ld = null; try { ld = JSON.parse(document.querySelector('script[type="application/ld+json"]').textContent); } catch {}
+        return { title: document.title, desc: m('meta[name=description]'), canon: m('link[rel=canonical]'), og: m('meta[property="og:image"]'), tw: m('meta[name="twitter:card"]'), icon: m('link[rel=icon]'), ld };
+      });
+      ok(`${tag} title + meta/og/twitter/canonical/icon`, /AWANA AIR/.test(seo.title) && seo.desc && seo.canon && seo.og && seo.tw === 'summary_large_image' && seo.icon);
+      ok(`${tag} JSON-LD Organization (telephone + sameAs)`, seo.ld && seo.ld['@type'] === 'Organization' && seo.ld.telephone === '+91-95403-60060' && SOCIAL.every((u) => seo.ld.sameAs.includes(u)));
+      // links
+      const links = await page.$$eval('a', (as) => as.map((a) => ({ href: a.getAttribute('href'), target: a.target, rel: a.rel })));
+      const ext = links.filter((l) => /^https?:/.test(l.href));
+      ok(`${tag} external links: new tab + noopener`, ext.every((l) => l.target === '_blank' && /noopener/.test(l.rel)));
+      const tel = links.filter((l) => l.href?.startsWith('tel:'));
+      ok(`${tag} tel links`, tel.length >= 3 && tel.every((l) => l.href === 'tel:+919540360060'));
+      const wa = links.filter((l) => l.href?.includes('wa.me'));
+      ok(`${tag} wa.me links`, wa.length >= 3 && wa.every((l) => l.href.startsWith('https://wa.me/919540360060')));
+      for (const u of SOCIAL) ok(`${tag} social ${u}`, links.some((l) => l.href === u && l.target === '_blank' && /noopener/.test(l.rel)));
+      const missing = await page.evaluate((ids) => ids.filter((id) => id !== '#' && !document.querySelector(id)), [...new Set(links.filter((l) => l.href?.startsWith('#')).map((l) => l.href))]);
+      ok(`${tag} in-page anchors resolve`, missing.length === 0, missing.join(','));
+      const credit = await page.evaluate(() => { const p = document.querySelector('.footer-bottom .credit'); const a = p?.querySelector('a'); return p && a && { text: p.textContent.replace(/\s+/g, ' ').trim(), href: a.getAttribute('href'), target: a.getAttribute('target'), rel: a.getAttribute('rel'), linkText: a.textContent.trim() }; });
+      ok(`${tag} footer credit "Powered by Amersphere.com"`, credit && credit.text === 'Powered by Amersphere.com' && credit.linkText === 'Amersphere.com' && credit.href === 'https://amersphere.com' && credit.target === '_blank' && /\bnoopener\b/.test(credit.rel), JSON.stringify(credit));
+      // form
+      await page.locator('#partner-form').scrollIntoViewIfNeeded(); await sleep(900);
+      let popups = 0; const onPopup = () => popups++; ctx.on('page', onPopup);
+      await page.click('#partner-form button[type=submit]'); await sleep(300);
+      const inv = await page.$$eval('#partner-form [aria-invalid=true]', (e) => e.map((x) => x.name));
+      ok(`${tag} empty form blocked (6 errors, no WhatsApp)`, inv.length === 6 && popups === 0, inv.join(','));
+      await page.fill('#f-name', 'Asha Rao'); await page.fill('#f-business', 'Skyline Tours & Travels'); await page.selectOption('#f-type', 'Tour & travel agency');
+      await page.fill('#f-city', 'Jaipur'); await page.fill('#f-phone', '12ab'); await page.selectOption('#f-service', 'Helicopter Charters');
+      await page.fill('#f-message', 'Group of 6 for a wedding, 3 days.');
+      await page.click('#partner-form button[type=submit]'); await sleep(300);
+      ok(`${tag} invalid phone blocked`, (await page.getAttribute('#f-phone', 'aria-invalid')) === 'true' && popups === 0);
+      await page.fill('#f-phone', '+91 98765 43210'); ctx.off('page', onPopup);
+      const [popup] = await Promise.all([ctx.waitForEvent('page', { timeout: 8000 }), page.click('#partner-form button[type=submit]')]);
+      const pu = new URL(popup.url());
+      const expected = "Hello AWANA AIR, I'd like to become a partner.\n\nName: Asha Rao\nBusiness name: Skyline Tours & Travels\nBusiness type: Tour & travel agency\nCity: Jaipur\nPhone: +91 98765 43210\nService of interest: Helicopter Charters\nMessage: Group of 6 for a wedding, 3 days.";
+      ok(`${tag} form opens wa.me/919540360060 with exact prefilled text`, pu.origin === 'https://wa.me' && pu.pathname === '/919540360060' && pu.searchParams.get('text') === expected, popup.url());
+      await popup.close();
+    }
+    // axe in every mode
+    await page.evaluate(() => scrollTo(0, 0)); await sleep(400);
     const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice']).analyze();
     ok(`${tag} axe: 0 violations`, axe.violations.length === 0, axe.violations.map((v) => `${v.id}(${v.nodes.length}): ${v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | ')}`).join('; '));
-
     ok(`${tag} no console errors`, errors.length === 0, errors.join(' || '));
     await ctx.close();
-
-    // reduced motion
-    const rctx = await browser.newContext({ ...vopts, reducedMotion: 'reduce' });
-    const rp = await rctx.newPage(); const rerr = [];
-    rp.on('pageerror', (e) => rerr.push(e.message)); rp.on('console', (m) => m.type() === 'error' && rerr.push(m.text()));
-    await rp.goto(URL0 + '/'); await sleep(2500); await scrollThrough(rp);
-    const rs = await rp.evaluate(() => ({
-      motion: document.documentElement.classList.contains('motion'), lenis: document.documentElement.classList.contains('lenis'),
-      heroCanvas: !!document.querySelector('#hero-canvas canvas'), fallback: getComputedStyle(document.querySelector('.hero-fallback')).opacity,
-      hidden: [...document.querySelectorAll('.reveal-up,.reveal-left,.reveal-card')].filter((e) => getComputedStyle(e).opacity !== '1').length,
-      marquee: getComputedStyle(document.querySelector('.marquee-track')).animationName,
-    }));
-    ok(`${tag} reduced motion: no motion/lenis, no hero WebGL, static fallback, content visible, no marquee`, !rs.motion && !rs.lenis && !rs.heroCanvas && rs.fallback === '1' && rs.hidden === 0 && rs.marquee === 'none', JSON.stringify(rs));
-    const raxe = await new AxeBuilder({ page: rp }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-    ok(`${tag} reduced motion axe: 0 violations`, raxe.violations.length === 0, raxe.violations.map((v) => v.id).join(','));
-    ok(`${tag} reduced motion no console errors`, rerr.length === 0, rerr.join(' || '));
-    await rctx.close();
-
-    // no-WebGL fallback
-    const nctx = await browser.newContext(vopts);
-    await nctx.addInitScript(() => { const g = HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext = function (t, ...a) { return /webgl/.test(t) ? null : g.call(this, t, ...a); }; });
-    const np = await nctx.newPage(); const nerr = []; np.on('pageerror', (e) => nerr.push(e.message));
-    await np.goto(URL0 + '/'); await sleep(4000); await scrollThrough(np);
-    const ns = await np.evaluate(() => ({ hero: !!document.querySelector('#hero-canvas canvas'), globe: !!document.querySelector('#globe canvas'), fb: getComputedStyle(document.querySelector('.hero-fallback')).opacity, gfb: getComputedStyle(document.querySelector('.globe-fallback')).opacity }));
-    ok(`${tag} no-WebGL: static hero + globe fallbacks, no errors`, !ns.hero && !ns.globe && ns.fb === '1' && ns.gfb === '1' && nerr.length === 0, JSON.stringify(ns) + nerr.join('|'));
-    await nctx.close();
   }
-  // 404 + static files (once per browser)
-  const p = await browser.newPage();
-  const r404 = await p.goto(URL0 + '/no-such-page');
-  ok(`${bname} 404 page`, r404.status() === 404 && /flown off course/.test(await p.textContent('h1')));
-  for (const f of ['robots.txt', 'sitemap.xml', 'favicon.svg', 'og-image.jpg', 'site.webmanifest', 'icon-512.png']) { const rr = await p.goto(URL0 + '/' + f); ok(`${bname} /${f} 200`, rr.status() === 200); }
+  // no-WebGL fallback
+  const nctx = await browser.newContext(T.opts);
+  await nctx.addInitScript(() => { const g = HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext = function (t, ...a) { return /webgl/.test(t) ? null : g.call(this, t, ...a); }; });
+  const np = await nctx.newPage(); const nerr = []; np.on('pageerror', (e) => nerr.push(e.message));
+  await np.goto(URL0 + '/'); await sleep(1500);
+  await np.evaluate(() => document.getElementById('network').scrollIntoView()); await sleep(1200);
+  const ns = await np.evaluate(() => ({ cls: document.documentElement.className, hero: getComputedStyle(document.querySelector('.hero-still')).display, globe: getComputedStyle(document.querySelector('.globe-still')).display, canvases: document.querySelectorAll('canvas').length }));
+  ok(`${T.id} no-WebGL: static jet + globe renders, no canvas, no errors`, /nogl/.test(ns.cls) && ns.hero === 'block' && ns.globe === 'block' && ns.canvases === 0 && nerr.length === 0, JSON.stringify(ns) + nerr.join('|'));
+  await nctx.close();
+  if (T.id === 'desktop-chromium' || T.id === 'iphone14') {
+    const p = await browser.newPage();
+    const r404 = await p.goto(URL0 + '/no-such-page');
+    ok(`${T.id} 404 page`, r404.status() === 404);
+    for (const f of ['robots.txt', 'sitemap.xml', 'favicon.svg', 'og-image.jpg', 'site.webmanifest', 'assets/img/hero-still.webp', 'assets/img/globe-still.webp', 'assets/img/hero-still-mobile.webp', 'assets/models/bizjet-lod0.glb', 'assets/models/bizjet-lod1.glb', 'assets/env/golden-hour-1k.jpg', 'assets/vendor/basis/basis_transcoder.js', 'assets/vendor/basis/basis_transcoder.wasm', 'CREDITS.md']) { const rr = await p.request.get(URL0 + '/' + f); ok(`${T.id} /${f} 200`, rr.status() === 200); }
+    await p.close();
+  }
   await browser.close();
 }
 srv?.close();

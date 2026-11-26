@@ -14,12 +14,12 @@ const ROUTES = [['delhi', 'london'], ['delhi', 'dubai'], ['mumbai', 'male'], ['m
 const DEG = Math.PI / 180;
 const ll = (lat, lng, r = 1) => { const phi = (90 - lat) * DEG, th = (lng + 180) * DEG; return new Vector3(-r * Math.sin(phi) * Math.cos(th), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(th)); };
 
-export async function initGlobe(el, { mobile = false, still = false } = {}) {
+export async function initGlobe(el, { mobile = false, still = false, force = false, onFail = () => {}, size = null } = {}) {
   const res = await fetch('/assets/data/land-dots.bin');
   const dots = new Int16Array(await res.arrayBuffer());
 
-  const renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.25 : 1.5));
+  const renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power', preserveDrawingBuffer: !!size });
+  renderer.setPixelRatio(size ? 1 : Math.min(devicePixelRatio || 1, mobile ? 1.25 : 1.5));
   renderer.outputColorSpace = SRGBColorSpace;
   renderer.domElement.setAttribute('aria-hidden', 'true');
   el.append(renderer.domElement);
@@ -31,12 +31,12 @@ export async function initGlobe(el, { mobile = false, still = false } = {}) {
   const pos = new Float32Array((dots.length / 2) * 3);
   for (let i = 0; i < dots.length / 2; i++) { const v = ll(dots[i * 2] / 100, dots[i * 2 + 1] / 100, 1.002); pos.set([v.x, v.y, v.z], i * 3); }
   const dg = new BufferGeometry(); dg.setAttribute('position', new Float32BufferAttribute(pos, 3));
-  globe.add(new Points(dg, new PointsMaterial({ color: 0xa9bdf5, size: mobile ? 0.024 : 0.019, transparent: true, opacity: 0.95 })));
+  globe.add(new Points(dg, new PointsMaterial({ color: 0x9fb0d4, size: mobile ? 0.022 : 0.017, transparent: true, opacity: 0.8 })));
 
   // atmosphere
   const atm = new ShaderMaterial({
     vertexShader: 'varying vec3 vN; void main(){ vN = normalize(normalMatrix*normal); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
-    fragmentShader: 'varying vec3 vN; void main(){ float i = pow(clamp(-dot(vN, vec3(0.0,0.0,1.0)), 0.0, 1.0), 1.4) * 1.3; gl_FragColor = vec4(0.95,0.78,0.48,1.0)*i; }',
+    fragmentShader: 'varying vec3 vN; void main(){ float i = pow(clamp(-dot(vN, vec3(0.0,0.0,1.0)), 0.0, 1.0), 1.6) * 0.7; gl_FragColor = vec4(0.79,0.66,0.43,1.0)*i; }',
     side: BackSide, blending: AdditiveBlending, transparent: true, depthWrite: false,
   });
   const atmo = new Mesh(new SphereGeometry(1.18, 48, 32), atm); scene.add(atmo);
@@ -75,8 +75,8 @@ export async function initGlobe(el, { mobile = false, still = false } = {}) {
   globe.rotation.set(0.32, base, 0);
   atmo.rotation.copy(globe.rotation);
 
-  function resize() { const w = el.clientWidth, h = el.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
-  resize(); new ResizeObserver(() => { resize(); if (still) renderer.render(scene, camera); }).observe(el);
+  function resize() { const w = size || el.clientWidth, h = size || el.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  resize(); if (!size) new ResizeObserver(() => { resize(); if (still) renderer.render(scene, camera); }).observe(el);
 
   // drag to spin
   let drag = null, vel = 0;
@@ -85,20 +85,28 @@ export async function initGlobe(el, { mobile = false, still = false } = {}) {
   const end = () => { drag = null; }; el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
 
   renderer.render(scene, camera); el.classList.add('ready');
+  if (size) return renderer.domElement.toDataURL('image/png');
   if (still) return;
 
-  let visible = true, running = false, last = performance.now(), t = 0;
+  let visible = true, running = false, last = performance.now(), t = 0, frames = 0, slow = 0;
   function frame(now) {
     if (!running) return;
-    const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
+    const rawMs = now - last; const dt = Math.min(0.05, rawMs / 1000); last = now; t += dt;
     if (!drag) { globe.rotation.y += dt * 0.09 + vel; vel *= 0.95; }
     arcMats.forEach((m) => (m.uniforms.uT.value = t));
     rings.forEach((r) => { const k = (t * 0.6 + r.userData.o) % 1; r.scale.setScalar(1 + k * 2.2); r.material.opacity = 0.7 * (1 - k); });
     renderer.render(scene, camera);
+    frames++;
+    if (!force && frames > 5 && frames < 50) { if (rawMs > 55) slow++; if (slow > 25) { running = false; renderer.domElement.remove(); el.classList.remove('ready'); onFail(); return; } }
     requestAnimationFrame(frame);
   }
   function update() { const want = visible && !document.hidden; if (want && !running) { running = true; last = performance.now(); requestAnimationFrame(frame); } else if (!want) running = false; }
   new IntersectionObserver((en) => { visible = en[0].isIntersecting; update(); }).observe(el);
   document.addEventListener('visibilitychange', update);
   update();
+}
+
+export async function renderStill(w = 1000) {
+  const el = document.createElement('div');
+  return initGlobe(el, { size: w, still: true });
 }

@@ -1,658 +1,1523 @@
 {
-  "url": "https://awana-air.vercel.app",
-  "date": "2026-11-26T06:48:38.466Z",
-  "passed": 130,
+  "url": "http://127.0.0.1:35211",
+  "date": "2026-11-26T08:13:01.264Z",
+  "passed": 303,
   "failed": 0,
   "results": [
     {
-      "name": "chromium/desktop status 200",
+      "name": "iphone14/default HTTP 200",
       "pass": true,
-      "info": 200
+      "info": "200"
     },
     {
-      "name": "chromium/desktop motion class",
+      "name": "iphone14/default no-GPU device gets the static jet render",
       "pass": true,
-      "info": ""
+      "info": "{\"cls\":\"js motion gl ready\",\"disp\":\"block\",\"bg\":\"url(\\\"http://127.0.0.1:35211/assets/img/hero-still-mobile.webp\\\")\"}"
     },
     {
-      "name": "chromium/desktop hero 3D rendered",
+      "name": "iphone14/default Lenis off on touch",
       "pass": true,
-      "info": "{\"motion\":true,\"heroCanvas\":true,\"heroReady\":true,\"globeReady\":true,\"dpr\":1}"
+      "info": "js motion gl ready"
     },
     {
-      "name": "chromium/desktop globe rendered",
+      "name": "iphone14/default one contact affordance (bar only)",
       "pass": true,
-      "info": ""
+      "info": "{\"bubble\":false,\"bar\":true,\"heroCtas\":2}"
     },
     {
-      "name": "chromium/desktop DPR capped at 1.5",
+      "name": "iphone14/default hero has at most 2 CTAs",
       "pass": true,
-      "info": 1
+      "info": "2"
     },
     {
-      "name": "chromium/desktop no horizontal overflow",
-      "pass": true,
-      "info": "{\"sw\":1440,\"iw\":1440}"
-    },
-    {
-      "name": "chromium/desktop title",
+      "name": "iphone14/default step-scroll: no heading overlaps / no heading drawn over the header",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/desktop meta/og/twitter/canonical/icon",
+      "name": "iphone14/default no lingering transforms after reveal",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/desktop JSON-LD Organization",
+      "name": "iphone14/default all revealed content fully visible",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/desktop external links open new tab with noopener",
-      "pass": true,
-      "info": "[]"
-    },
-    {
-      "name": "chromium/desktop tel links",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop wa.me links",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop social WhatsApp channel",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop social Instagram",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop social Facebook",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop in-page anchors resolve",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop footer credit \"Powered by Amersphere.com\"",
-      "pass": true,
-      "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
-    },
-    {
-      "name": "chromium/desktop floating WhatsApp button",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop mobile bar hidden",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop empty form blocked with 6 errors",
-      "pass": true,
-      "info": "name,business,type,city,phone,service"
-    },
-    {
-      "name": "chromium/desktop invalid phone blocked",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop form opens wa.me/919540360060",
-      "pass": true,
-      "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
-    },
-    {
-      "name": "chromium/desktop form text prefilled exactly",
-      "pass": true,
-      "info": "\"Hello AWANA AIR, I'd like to become a partner.\\n\\nName: Asha Rao\\nBusiness name: Skyline Tours & Travels\\nBusiness type: Tour & travel agency\\nCity: Jaipur\\nPhone: +91 98765 43210\\nService of interest: Helicopter Charters\\nMessage: Group of 6 for a wedding, 3 days.\""
-    },
-    {
-      "name": "chromium/desktop axe: 0 violations",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop no console errors",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop reduced motion: no motion/lenis, no hero WebGL, static fallback, content visible, no marquee",
-      "pass": true,
-      "info": "{\"motion\":false,\"lenis\":false,\"heroCanvas\":false,\"fallback\":\"1\",\"hidden\":0,\"marquee\":\"none\"}"
-    },
-    {
-      "name": "chromium/desktop reduced motion axe: 0 violations",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop reduced motion no console errors",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/desktop no-WebGL: static hero + globe fallbacks, no errors",
-      "pass": true,
-      "info": "{\"hero\":false,\"globe\":false,\"fb\":\"1\",\"gfb\":\"1\"}"
-    },
-    {
-      "name": "chromium/mobile status 200",
-      "pass": true,
-      "info": 200
-    },
-    {
-      "name": "chromium/mobile motion class",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/mobile hero 3D rendered",
-      "pass": true,
-      "info": "{\"motion\":true,\"heroCanvas\":true,\"heroReady\":true,\"globeReady\":true,\"dpr\":1.2487179487179487}"
-    },
-    {
-      "name": "chromium/mobile globe rendered",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/mobile DPR capped at 1.5",
-      "pass": true,
-      "info": 1.2487179487179487
-    },
-    {
-      "name": "chromium/mobile no horizontal overflow",
+      "name": "iphone14/default no horizontal overflow",
       "pass": true,
       "info": "{\"sw\":390,\"iw\":390}"
     },
     {
-      "name": "chromium/mobile title",
+      "name": "iphone14/default after fast fling: no overlaps, no lingering transforms",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile meta/og/twitter/canonical/icon",
+      "name": "iphone14/default menu opened mid-page covers the full viewport",
+      "pass": true,
+      "info": "{\"hidden\":false,\"top\":0,\"h\":664,\"vh\":664,\"w\":390,\"vw\":390,\"onTop\":true,\"inHeader\":false}"
+    },
+    {
+      "name": "iphone14/default menu closes with Escape",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile JSON-LD Organization",
+      "name": "iphone14/default title + meta/og/twitter/canonical/icon",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile external links open new tab with noopener",
-      "pass": true,
-      "info": "[]"
-    },
-    {
-      "name": "chromium/mobile tel links",
+      "name": "iphone14/default JSON-LD Organization (telephone + sameAs)",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile wa.me links",
+      "name": "iphone14/default external links: new tab + noopener",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile social WhatsApp channel",
+      "name": "iphone14/default tel links",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile social Instagram",
+      "name": "iphone14/default wa.me links",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile social Facebook",
+      "name": "iphone14/default social https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile in-page anchors resolve",
+      "name": "iphone14/default social https://www.instagram.com/awana_air",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile footer credit \"Powered by Amersphere.com\"",
+      "name": "iphone14/default social https://www.facebook.com/share/19qmNAzfaX/",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14/default in-page anchors resolve",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14/default footer credit \"Powered by Amersphere.com\"",
       "pass": true,
       "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
     },
     {
-      "name": "chromium/mobile floating WhatsApp button",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/mobile mobile bar shown",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium/mobile empty form blocked with 6 errors",
+      "name": "iphone14/default empty form blocked (6 errors, no WhatsApp)",
       "pass": true,
       "info": "name,business,type,city,phone,service"
     },
     {
-      "name": "chromium/mobile invalid phone blocked",
+      "name": "iphone14/default invalid phone blocked",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile form opens wa.me/919540360060",
+      "name": "iphone14/default form opens wa.me/919540360060 with exact prefilled text",
       "pass": true,
       "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
     },
     {
-      "name": "chromium/mobile form text prefilled exactly",
-      "pass": true,
-      "info": "\"Hello AWANA AIR, I'd like to become a partner.\\n\\nName: Asha Rao\\nBusiness name: Skyline Tours & Travels\\nBusiness type: Tour & travel agency\\nCity: Jaipur\\nPhone: +91 98765 43210\\nService of interest: Helicopter Charters\\nMessage: Group of 6 for a wedding, 3 days.\""
-    },
-    {
-      "name": "chromium/mobile axe: 0 violations",
+      "name": "iphone14/default axe: 0 violations",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile no console errors",
+      "name": "iphone14/default no console errors",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium/mobile reduced motion: no motion/lenis, no hero WebGL, static fallback, content visible, no marquee",
+      "name": "iphone14/force3d HTTP 200",
       "pass": true,
-      "info": "{\"motion\":false,\"lenis\":false,\"heroCanvas\":false,\"fallback\":\"1\",\"hidden\":0,\"marquee\":\"none\"}"
+      "info": "200"
     },
     {
-      "name": "chromium/mobile reduced motion axe: 0 violations",
+      "name": "iphone14/force3d hero 3D jet visible without interaction (1420 ms on software GL)",
       "pass": true,
-      "info": ""
+      "info": "js motion gl ready"
     },
     {
-      "name": "chromium/mobile reduced motion no console errors",
+      "name": "iphone14/force3d DPR capped (<=1.6 phone, <=1.5 desktop)",
       "pass": true,
-      "info": ""
+      "info": "1.6"
     },
     {
-      "name": "chromium/mobile no-WebGL: static hero + globe fallbacks, no errors",
+      "name": "iphone14/force3d Lenis off on touch",
       "pass": true,
-      "info": "{\"hero\":false,\"globe\":false,\"fb\":\"1\",\"gfb\":\"1\"}"
+      "info": "js motion gl ready"
     },
     {
-      "name": "chromium 404 page",
+      "name": "iphone14/force3d one contact affordance (bar only)",
       "pass": true,
-      "info": ""
+      "info": "{\"bubble\":false,\"bar\":true,\"heroCtas\":2}"
     },
     {
-      "name": "chromium /robots.txt 200",
+      "name": "iphone14/force3d hero has at most 2 CTAs",
       "pass": true,
-      "info": ""
+      "info": "2"
     },
     {
-      "name": "chromium /sitemap.xml 200",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "chromium /favicon.svg 200",
+      "name": "iphone14/force3d step-scroll: no heading overlaps / no heading drawn over the header",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium /og-image.jpg 200",
+      "name": "iphone14/force3d no lingering transforms after reveal",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium /site.webmanifest 200",
+      "name": "iphone14/force3d all revealed content fully visible",
       "pass": true,
       "info": ""
     },
     {
-      "name": "chromium /icon-512.png 200",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop status 200",
-      "pass": true,
-      "info": 200
-    },
-    {
-      "name": "webkit/desktop motion class",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop hero 3D rendered",
-      "pass": true,
-      "info": "{\"motion\":true,\"heroCanvas\":true,\"heroReady\":true,\"globeReady\":true,\"dpr\":1}"
-    },
-    {
-      "name": "webkit/desktop globe rendered",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop DPR capped at 1.5",
-      "pass": true,
-      "info": 1
-    },
-    {
-      "name": "webkit/desktop no horizontal overflow",
-      "pass": true,
-      "info": "{\"sw\":1440,\"iw\":1440}"
-    },
-    {
-      "name": "webkit/desktop title",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop meta/og/twitter/canonical/icon",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop JSON-LD Organization",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop external links open new tab with noopener",
-      "pass": true,
-      "info": "[]"
-    },
-    {
-      "name": "webkit/desktop tel links",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop wa.me links",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop social WhatsApp channel",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop social Instagram",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop social Facebook",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop in-page anchors resolve",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop footer credit \"Powered by Amersphere.com\"",
-      "pass": true,
-      "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
-    },
-    {
-      "name": "webkit/desktop floating WhatsApp button",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop mobile bar hidden",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop empty form blocked with 6 errors",
-      "pass": true,
-      "info": "name,business,type,city,phone,service"
-    },
-    {
-      "name": "webkit/desktop invalid phone blocked",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop form opens wa.me/919540360060",
-      "pass": true,
-      "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
-    },
-    {
-      "name": "webkit/desktop form text prefilled exactly",
-      "pass": true,
-      "info": "\"Hello AWANA AIR, I'd like to become a partner.\\n\\nName: Asha Rao\\nBusiness name: Skyline Tours & Travels\\nBusiness type: Tour & travel agency\\nCity: Jaipur\\nPhone: +91 98765 43210\\nService of interest: Helicopter Charters\\nMessage: Group of 6 for a wedding, 3 days.\""
-    },
-    {
-      "name": "webkit/desktop axe: 0 violations",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop no console errors",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop reduced motion: no motion/lenis, no hero WebGL, static fallback, content visible, no marquee",
-      "pass": true,
-      "info": "{\"motion\":false,\"lenis\":false,\"heroCanvas\":false,\"fallback\":\"1\",\"hidden\":0,\"marquee\":\"none\"}"
-    },
-    {
-      "name": "webkit/desktop reduced motion axe: 0 violations",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop reduced motion no console errors",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/desktop no-WebGL: static hero + globe fallbacks, no errors",
-      "pass": true,
-      "info": "{\"hero\":false,\"globe\":false,\"fb\":\"1\",\"gfb\":\"1\"}"
-    },
-    {
-      "name": "webkit/mobile status 200",
-      "pass": true,
-      "info": 200
-    },
-    {
-      "name": "webkit/mobile motion class",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/mobile hero 3D rendered",
-      "pass": true,
-      "info": "{\"motion\":true,\"heroCanvas\":true,\"heroReady\":true,\"globeReady\":true,\"dpr\":1.2487179487179487}"
-    },
-    {
-      "name": "webkit/mobile globe rendered",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/mobile DPR capped at 1.5",
-      "pass": true,
-      "info": 1.2487179487179487
-    },
-    {
-      "name": "webkit/mobile no horizontal overflow",
+      "name": "iphone14/force3d no horizontal overflow",
       "pass": true,
       "info": "{\"sw\":390,\"iw\":390}"
     },
     {
-      "name": "webkit/mobile title",
+      "name": "iphone14/force3d after fast fling: no overlaps, no lingering transforms",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile meta/og/twitter/canonical/icon",
+      "name": "iphone14/force3d menu opened mid-page covers the full viewport",
+      "pass": true,
+      "info": "{\"hidden\":false,\"top\":0,\"h\":664,\"vh\":664,\"w\":390,\"vw\":390,\"onTop\":true,\"inHeader\":false}"
+    },
+    {
+      "name": "iphone14/force3d menu closes with Escape",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile JSON-LD Organization",
+      "name": "iphone14/force3d axe: 0 violations",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile external links open new tab with noopener",
-      "pass": true,
-      "info": "[]"
-    },
-    {
-      "name": "webkit/mobile tel links",
+      "name": "iphone14/force3d no console errors",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile wa.me links",
+      "name": "iphone14/reduced HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "iphone14/reduced reduced motion: no motion/lenis/WebGL, static render shown",
+      "pass": true,
+      "info": "{\"cls\":\"js nogl ready\",\"still\":\"block\",\"canvas\":false}"
+    },
+    {
+      "name": "iphone14/reduced Lenis off on touch",
+      "pass": true,
+      "info": "js nogl ready"
+    },
+    {
+      "name": "iphone14/reduced one contact affordance (bar only)",
+      "pass": true,
+      "info": "{\"bubble\":false,\"bar\":true,\"heroCtas\":2}"
+    },
+    {
+      "name": "iphone14/reduced hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "iphone14/reduced step-scroll: no heading overlaps / no heading drawn over the header",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile social WhatsApp channel",
+      "name": "iphone14/reduced no lingering transforms after reveal",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile social Instagram",
+      "name": "iphone14/reduced all revealed content fully visible",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile social Facebook",
+      "name": "iphone14/reduced no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":390,\"iw\":390}"
+    },
+    {
+      "name": "iphone14/reduced after fast fling: no overlaps, no lingering transforms",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile in-page anchors resolve",
+      "name": "iphone14/reduced menu opened mid-page covers the full viewport",
+      "pass": true,
+      "info": "{\"hidden\":false,\"top\":0,\"h\":664,\"vh\":664,\"w\":390,\"vw\":390,\"onTop\":true,\"inHeader\":false}"
+    },
+    {
+      "name": "iphone14/reduced menu closes with Escape",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile footer credit \"Powered by Amersphere.com\"",
+      "name": "iphone14/reduced axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14/reduced no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 no-WebGL: static jet + globe renders, no canvas, no errors",
+      "pass": true,
+      "info": "{\"cls\":\"js motion nogl ready\",\"hero\":\"block\",\"globe\":\"block\",\"canvases\":0}"
+    },
+    {
+      "name": "iphone14 404 page",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /robots.txt 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /sitemap.xml 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /favicon.svg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /og-image.jpg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /site.webmanifest 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /assets/img/hero-still.webp 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /assets/img/globe-still.webp 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /assets/img/hero-still-mobile.webp 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /assets/models/bizjet-lod0.glb 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /assets/models/bizjet-lod1.glb 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /assets/env/golden-hour-1k.jpg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /assets/vendor/basis/basis_transcoder.js 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /assets/vendor/basis/basis_transcoder.wasm 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone14 /CREDITS.md 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "iphone15pro/default no-GPU device gets the static jet render",
+      "pass": true,
+      "info": "{\"cls\":\"js motion gl ready\",\"disp\":\"block\",\"bg\":\"url(\\\"http://127.0.0.1:35211/assets/img/hero-still-mobile.webp\\\")\"}"
+    },
+    {
+      "name": "iphone15pro/default Lenis off on touch",
+      "pass": true,
+      "info": "js motion gl ready"
+    },
+    {
+      "name": "iphone15pro/default one contact affordance (bar only)",
+      "pass": true,
+      "info": "{\"bubble\":false,\"bar\":true,\"heroCtas\":2}"
+    },
+    {
+      "name": "iphone15pro/default hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "iphone15pro/default step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":393,\"iw\":393}"
+    },
+    {
+      "name": "iphone15pro/default after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default menu opened mid-page covers the full viewport",
+      "pass": true,
+      "info": "{\"hidden\":false,\"top\":0,\"h\":659,\"vh\":659,\"w\":393,\"vw\":393,\"onTop\":true,\"inHeader\":false}"
+    },
+    {
+      "name": "iphone15pro/default menu closes with Escape",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default title + meta/og/twitter/canonical/icon",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default JSON-LD Organization (telephone + sameAs)",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default external links: new tab + noopener",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default tel links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default wa.me links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default social https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default social https://www.instagram.com/awana_air",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default social https://www.facebook.com/share/19qmNAzfaX/",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default in-page anchors resolve",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/default footer credit \"Powered by Amersphere.com\"",
       "pass": true,
       "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
     },
     {
-      "name": "webkit/mobile floating WhatsApp button",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/mobile mobile bar shown",
-      "pass": true,
-      "info": ""
-    },
-    {
-      "name": "webkit/mobile empty form blocked with 6 errors",
+      "name": "iphone15pro/default empty form blocked (6 errors, no WhatsApp)",
       "pass": true,
       "info": "name,business,type,city,phone,service"
     },
     {
-      "name": "webkit/mobile invalid phone blocked",
+      "name": "iphone15pro/default invalid phone blocked",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile form opens wa.me/919540360060",
+      "name": "iphone15pro/default form opens wa.me/919540360060 with exact prefilled text",
       "pass": true,
       "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
     },
     {
-      "name": "webkit/mobile form text prefilled exactly",
-      "pass": true,
-      "info": "\"Hello AWANA AIR, I'd like to become a partner.\\n\\nName: Asha Rao\\nBusiness name: Skyline Tours & Travels\\nBusiness type: Tour & travel agency\\nCity: Jaipur\\nPhone: +91 98765 43210\\nService of interest: Helicopter Charters\\nMessage: Group of 6 for a wedding, 3 days.\""
-    },
-    {
-      "name": "webkit/mobile axe: 0 violations",
+      "name": "iphone15pro/default axe: 0 violations",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile no console errors",
+      "name": "iphone15pro/default no console errors",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile reduced motion: no motion/lenis, no hero WebGL, static fallback, content visible, no marquee",
+      "name": "iphone15pro/force3d HTTP 200",
       "pass": true,
-      "info": "{\"motion\":false,\"lenis\":false,\"heroCanvas\":false,\"fallback\":\"1\",\"hidden\":0,\"marquee\":\"none\"}"
+      "info": "200"
     },
     {
-      "name": "webkit/mobile reduced motion axe: 0 violations",
+      "name": "iphone15pro/force3d hero 3D jet visible without interaction (1445 ms on software GL)",
+      "pass": true,
+      "info": "js motion gl ready"
+    },
+    {
+      "name": "iphone15pro/force3d DPR capped (<=1.6 phone, <=1.5 desktop)",
+      "pass": true,
+      "info": "1.5979643765903309"
+    },
+    {
+      "name": "iphone15pro/force3d Lenis off on touch",
+      "pass": true,
+      "info": "js motion gl ready"
+    },
+    {
+      "name": "iphone15pro/force3d one contact affordance (bar only)",
+      "pass": true,
+      "info": "{\"bubble\":false,\"bar\":true,\"heroCtas\":2}"
+    },
+    {
+      "name": "iphone15pro/force3d hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "iphone15pro/force3d step-scroll: no heading overlaps / no heading drawn over the header",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile reduced motion no console errors",
+      "name": "iphone15pro/force3d no lingering transforms after reveal",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit/mobile no-WebGL: static hero + globe fallbacks, no errors",
-      "pass": true,
-      "info": "{\"hero\":false,\"globe\":false,\"fb\":\"1\",\"gfb\":\"1\"}"
-    },
-    {
-      "name": "webkit 404 page",
+      "name": "iphone15pro/force3d all revealed content fully visible",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit /robots.txt 200",
+      "name": "iphone15pro/force3d no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":393,\"iw\":393}"
+    },
+    {
+      "name": "iphone15pro/force3d after fast fling: no overlaps, no lingering transforms",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit /sitemap.xml 200",
+      "name": "iphone15pro/force3d menu opened mid-page covers the full viewport",
+      "pass": true,
+      "info": "{\"hidden\":false,\"top\":0,\"h\":659,\"vh\":659,\"w\":393,\"vw\":393,\"onTop\":true,\"inHeader\":false}"
+    },
+    {
+      "name": "iphone15pro/force3d menu closes with Escape",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit /favicon.svg 200",
+      "name": "iphone15pro/force3d axe: 0 violations",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit /og-image.jpg 200",
+      "name": "iphone15pro/force3d no console errors",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit /site.webmanifest 200",
+      "name": "iphone15pro/reduced HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "iphone15pro/reduced reduced motion: no motion/lenis/WebGL, static render shown",
+      "pass": true,
+      "info": "{\"cls\":\"js nogl ready\",\"still\":\"block\",\"canvas\":false}"
+    },
+    {
+      "name": "iphone15pro/reduced Lenis off on touch",
+      "pass": true,
+      "info": "js nogl ready"
+    },
+    {
+      "name": "iphone15pro/reduced one contact affordance (bar only)",
+      "pass": true,
+      "info": "{\"bubble\":false,\"bar\":true,\"heroCtas\":2}"
+    },
+    {
+      "name": "iphone15pro/reduced hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "iphone15pro/reduced step-scroll: no heading overlaps / no heading drawn over the header",
       "pass": true,
       "info": ""
     },
     {
-      "name": "webkit /icon-512.png 200",
+      "name": "iphone15pro/reduced no lingering transforms after reveal",
       "pass": true,
       "info": ""
+    },
+    {
+      "name": "iphone15pro/reduced all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/reduced no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":393,\"iw\":393}"
+    },
+    {
+      "name": "iphone15pro/reduced after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/reduced menu opened mid-page covers the full viewport",
+      "pass": true,
+      "info": "{\"hidden\":false,\"top\":0,\"h\":659,\"vh\":659,\"w\":393,\"vw\":393,\"onTop\":true,\"inHeader\":false}"
+    },
+    {
+      "name": "iphone15pro/reduced menu closes with Escape",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/reduced axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro/reduced no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "iphone15pro no-WebGL: static jet + globe renders, no canvas, no errors",
+      "pass": true,
+      "info": "{\"cls\":\"js motion nogl ready\",\"hero\":\"block\",\"globe\":\"block\",\"canvases\":0}"
+    },
+    {
+      "name": "pixel7/default HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "pixel7/default no-GPU device gets the static jet render",
+      "pass": true,
+      "info": "{\"cls\":\"js motion nogl ready\",\"disp\":\"block\",\"bg\":\"url(\\\"http://127.0.0.1:35211/assets/img/hero-still-mobile.webp\\\")\"}"
+    },
+    {
+      "name": "pixel7/default Lenis off on touch",
+      "pass": true,
+      "info": "js motion nogl ready"
+    },
+    {
+      "name": "pixel7/default one contact affordance (bar only)",
+      "pass": true,
+      "info": "{\"bubble\":false,\"bar\":true,\"heroCtas\":2}"
+    },
+    {
+      "name": "pixel7/default hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "pixel7/default step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":412,\"iw\":412}"
+    },
+    {
+      "name": "pixel7/default after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default menu opened mid-page covers the full viewport",
+      "pass": true,
+      "info": "{\"hidden\":false,\"top\":0,\"h\":839,\"vh\":839,\"w\":412,\"vw\":412,\"onTop\":true,\"inHeader\":false}"
+    },
+    {
+      "name": "pixel7/default menu closes with Escape",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default title + meta/og/twitter/canonical/icon",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default JSON-LD Organization (telephone + sameAs)",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default external links: new tab + noopener",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default tel links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default wa.me links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default social https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default social https://www.instagram.com/awana_air",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default social https://www.facebook.com/share/19qmNAzfaX/",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default in-page anchors resolve",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default footer credit \"Powered by Amersphere.com\"",
+      "pass": true,
+      "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
+    },
+    {
+      "name": "pixel7/default empty form blocked (6 errors, no WhatsApp)",
+      "pass": true,
+      "info": "name,business,type,city,phone,service"
+    },
+    {
+      "name": "pixel7/default invalid phone blocked",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default form opens wa.me/919540360060 with exact prefilled text",
+      "pass": true,
+      "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
+    },
+    {
+      "name": "pixel7/default axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/default no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/force3d HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "pixel7/force3d hero 3D jet visible without interaction (595 ms on software GL)",
+      "pass": true,
+      "info": "js motion gl ready"
+    },
+    {
+      "name": "pixel7/force3d DPR capped (<=1.6 phone, <=1.5 desktop)",
+      "pass": true,
+      "info": "1.5995145631067962"
+    },
+    {
+      "name": "pixel7/force3d Lenis off on touch",
+      "pass": true,
+      "info": "js motion gl ready"
+    },
+    {
+      "name": "pixel7/force3d one contact affordance (bar only)",
+      "pass": true,
+      "info": "{\"bubble\":false,\"bar\":true,\"heroCtas\":2}"
+    },
+    {
+      "name": "pixel7/force3d hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "pixel7/force3d step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/force3d no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/force3d all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/force3d no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":412,\"iw\":412}"
+    },
+    {
+      "name": "pixel7/force3d after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/force3d menu opened mid-page covers the full viewport",
+      "pass": true,
+      "info": "{\"hidden\":false,\"top\":0,\"h\":839,\"vh\":839,\"w\":412,\"vw\":412,\"onTop\":true,\"inHeader\":false}"
+    },
+    {
+      "name": "pixel7/force3d menu closes with Escape",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/force3d axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/force3d no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/reduced HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "pixel7/reduced reduced motion: no motion/lenis/WebGL, static render shown",
+      "pass": true,
+      "info": "{\"cls\":\"js nogl ready\",\"still\":\"block\",\"canvas\":false}"
+    },
+    {
+      "name": "pixel7/reduced Lenis off on touch",
+      "pass": true,
+      "info": "js nogl ready"
+    },
+    {
+      "name": "pixel7/reduced one contact affordance (bar only)",
+      "pass": true,
+      "info": "{\"bubble\":false,\"bar\":true,\"heroCtas\":2}"
+    },
+    {
+      "name": "pixel7/reduced hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "pixel7/reduced step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/reduced no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/reduced all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/reduced no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":412,\"iw\":412}"
+    },
+    {
+      "name": "pixel7/reduced after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/reduced menu opened mid-page covers the full viewport",
+      "pass": true,
+      "info": "{\"hidden\":false,\"top\":0,\"h\":839,\"vh\":839,\"w\":412,\"vw\":412,\"onTop\":true,\"inHeader\":false}"
+    },
+    {
+      "name": "pixel7/reduced menu closes with Escape",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/reduced axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7/reduced no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "pixel7 no-WebGL: static jet + globe renders, no canvas, no errors",
+      "pass": true,
+      "info": "{\"cls\":\"js motion nogl ready\",\"hero\":\"block\",\"globe\":\"block\",\"canvases\":0}"
+    },
+    {
+      "name": "desktop-chromium/default HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "desktop-chromium/default no-GPU device gets the static jet render",
+      "pass": true,
+      "info": "{\"cls\":\"js motion nogl lenis ready\",\"disp\":\"block\",\"bg\":\"url(\\\"http://127.0.0.1:35211/assets/img/hero-still.webp\\\")\"}"
+    },
+    {
+      "name": "desktop-chromium/default Lenis only on desktop",
+      "pass": true,
+      "info": "js motion nogl lenis ready"
+    },
+    {
+      "name": "desktop-chromium/default one contact affordance (bubble only)",
+      "pass": true,
+      "info": "{\"bubble\":true,\"bar\":false,\"heroCtas\":2}"
+    },
+    {
+      "name": "desktop-chromium/default hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "desktop-chromium/default step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":1440,\"iw\":1440}"
+    },
+    {
+      "name": "desktop-chromium/default after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default title + meta/og/twitter/canonical/icon",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default JSON-LD Organization (telephone + sameAs)",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default external links: new tab + noopener",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default tel links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default wa.me links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default social https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default social https://www.instagram.com/awana_air",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default social https://www.facebook.com/share/19qmNAzfaX/",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default in-page anchors resolve",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default footer credit \"Powered by Amersphere.com\"",
+      "pass": true,
+      "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
+    },
+    {
+      "name": "desktop-chromium/default empty form blocked (6 errors, no WhatsApp)",
+      "pass": true,
+      "info": "name,business,type,city,phone,service"
+    },
+    {
+      "name": "desktop-chromium/default invalid phone blocked",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default form opens wa.me/919540360060 with exact prefilled text",
+      "pass": true,
+      "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
+    },
+    {
+      "name": "desktop-chromium/default axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/default no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/force3d HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "desktop-chromium/force3d hero 3D jet visible without interaction (831 ms on software GL)",
+      "pass": true,
+      "info": "js motion gl lenis ready"
+    },
+    {
+      "name": "desktop-chromium/force3d DPR capped (<=1.6 phone, <=1.5 desktop)",
+      "pass": true,
+      "info": "1"
+    },
+    {
+      "name": "desktop-chromium/force3d Lenis only on desktop",
+      "pass": true,
+      "info": "js motion gl lenis ready"
+    },
+    {
+      "name": "desktop-chromium/force3d one contact affordance (bubble only)",
+      "pass": true,
+      "info": "{\"bubble\":true,\"bar\":false,\"heroCtas\":2}"
+    },
+    {
+      "name": "desktop-chromium/force3d hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "desktop-chromium/force3d step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/force3d no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/force3d all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/force3d no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":1440,\"iw\":1440}"
+    },
+    {
+      "name": "desktop-chromium/force3d after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/force3d axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/force3d no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/reduced HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "desktop-chromium/reduced reduced motion: no motion/lenis/WebGL, static render shown",
+      "pass": true,
+      "info": "{\"cls\":\"js nogl ready\",\"still\":\"block\",\"canvas\":false}"
+    },
+    {
+      "name": "desktop-chromium/reduced Lenis only on desktop",
+      "pass": true,
+      "info": "js nogl ready"
+    },
+    {
+      "name": "desktop-chromium/reduced one contact affordance (bubble only)",
+      "pass": true,
+      "info": "{\"bubble\":true,\"bar\":false,\"heroCtas\":2}"
+    },
+    {
+      "name": "desktop-chromium/reduced hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "desktop-chromium/reduced step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/reduced no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/reduced all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/reduced no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":1440,\"iw\":1440}"
+    },
+    {
+      "name": "desktop-chromium/reduced after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/reduced axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium/reduced no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium no-WebGL: static jet + globe renders, no canvas, no errors",
+      "pass": true,
+      "info": "{\"cls\":\"js motion nogl ready lenis\",\"hero\":\"block\",\"globe\":\"block\",\"canvases\":0}"
+    },
+    {
+      "name": "desktop-chromium 404 page",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /robots.txt 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /sitemap.xml 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /favicon.svg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /og-image.jpg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /site.webmanifest 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /assets/img/hero-still.webp 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /assets/img/globe-still.webp 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /assets/img/hero-still-mobile.webp 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /assets/models/bizjet-lod0.glb 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /assets/models/bizjet-lod1.glb 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /assets/env/golden-hour-1k.jpg 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /assets/vendor/basis/basis_transcoder.js 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /assets/vendor/basis/basis_transcoder.wasm 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-chromium /CREDITS.md 200",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "desktop-webkit/default no-GPU device gets the static jet render",
+      "pass": true,
+      "info": "{\"cls\":\"js motion gl lenis ready\",\"disp\":\"block\",\"bg\":\"url(\\\"http://127.0.0.1:35211/assets/img/hero-still.webp\\\")\"}"
+    },
+    {
+      "name": "desktop-webkit/default Lenis only on desktop",
+      "pass": true,
+      "info": "js motion gl lenis ready"
+    },
+    {
+      "name": "desktop-webkit/default one contact affordance (bubble only)",
+      "pass": true,
+      "info": "{\"bubble\":true,\"bar\":false,\"heroCtas\":2}"
+    },
+    {
+      "name": "desktop-webkit/default hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "desktop-webkit/default step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":1440,\"iw\":1440}"
+    },
+    {
+      "name": "desktop-webkit/default after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default title + meta/og/twitter/canonical/icon",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default JSON-LD Organization (telephone + sameAs)",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default external links: new tab + noopener",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default tel links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default wa.me links",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default social https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default social https://www.instagram.com/awana_air",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default social https://www.facebook.com/share/19qmNAzfaX/",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default in-page anchors resolve",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default footer credit \"Powered by Amersphere.com\"",
+      "pass": true,
+      "info": "{\"text\":\"Powered by Amersphere.com\",\"href\":\"https://amersphere.com\",\"target\":\"_blank\",\"rel\":\"noopener\",\"linkText\":\"Amersphere.com\"}"
+    },
+    {
+      "name": "desktop-webkit/default empty form blocked (6 errors, no WhatsApp)",
+      "pass": true,
+      "info": "name,business,type,city,phone,service"
+    },
+    {
+      "name": "desktop-webkit/default invalid phone blocked",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default form opens wa.me/919540360060 with exact prefilled text",
+      "pass": true,
+      "info": "https://wa.me/919540360060?text=Hello%20AWANA%20AIR%2C%20I%27d%20like%20to%20become%20a%20partner.%0A%0AName%3A%20Asha%20Rao%0ABusiness%20name%3A%20Skyline%20Tours%20%26%20Travels%0ABusiness%20type%3A%20Tour%20%26%20travel%20agency%0ACity%3A%20Jaipur%0APhone%3A%20%2B91%2098765%2043210%0AService%20of%20interest%3A%20Helicopter%20Charters%0AMessage%3A%20Group%20of%206%20for%20a%20wedding%2C%203%20days."
+    },
+    {
+      "name": "desktop-webkit/default axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/default no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/force3d HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "desktop-webkit/force3d hero 3D jet visible without interaction (1825 ms on software GL)",
+      "pass": true,
+      "info": "js motion gl lenis ready"
+    },
+    {
+      "name": "desktop-webkit/force3d DPR capped (<=1.6 phone, <=1.5 desktop)",
+      "pass": true,
+      "info": "1"
+    },
+    {
+      "name": "desktop-webkit/force3d Lenis only on desktop",
+      "pass": true,
+      "info": "js motion gl lenis ready"
+    },
+    {
+      "name": "desktop-webkit/force3d one contact affordance (bubble only)",
+      "pass": true,
+      "info": "{\"bubble\":true,\"bar\":false,\"heroCtas\":2}"
+    },
+    {
+      "name": "desktop-webkit/force3d hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "desktop-webkit/force3d step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/force3d no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/force3d all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/force3d no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":1440,\"iw\":1440}"
+    },
+    {
+      "name": "desktop-webkit/force3d after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/force3d axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/force3d no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/reduced HTTP 200",
+      "pass": true,
+      "info": "200"
+    },
+    {
+      "name": "desktop-webkit/reduced reduced motion: no motion/lenis/WebGL, static render shown",
+      "pass": true,
+      "info": "{\"cls\":\"js nogl ready\",\"still\":\"block\",\"canvas\":false}"
+    },
+    {
+      "name": "desktop-webkit/reduced Lenis only on desktop",
+      "pass": true,
+      "info": "js nogl ready"
+    },
+    {
+      "name": "desktop-webkit/reduced one contact affordance (bubble only)",
+      "pass": true,
+      "info": "{\"bubble\":true,\"bar\":false,\"heroCtas\":2}"
+    },
+    {
+      "name": "desktop-webkit/reduced hero has at most 2 CTAs",
+      "pass": true,
+      "info": "2"
+    },
+    {
+      "name": "desktop-webkit/reduced step-scroll: no heading overlaps / no heading drawn over the header",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/reduced no lingering transforms after reveal",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/reduced all revealed content fully visible",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/reduced no horizontal overflow",
+      "pass": true,
+      "info": "{\"sw\":1440,\"iw\":1440}"
+    },
+    {
+      "name": "desktop-webkit/reduced after fast fling: no overlaps, no lingering transforms",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/reduced axe: 0 violations",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit/reduced no console errors",
+      "pass": true,
+      "info": ""
+    },
+    {
+      "name": "desktop-webkit no-WebGL: static jet + globe renders, no canvas, no errors",
+      "pass": true,
+      "info": "{\"cls\":\"js motion nogl ready lenis\",\"hero\":\"block\",\"globe\":\"block\",\"canvases\":0}"
     }
   ]
 }

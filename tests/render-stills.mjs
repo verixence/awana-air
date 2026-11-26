@@ -12,7 +12,7 @@ const p = await b.newPage();
 p.on('pageerror', (e) => console.log('pageerror', e.message));
 p.on('console', (m) => m.type() === 'error' && console.log('console', m.text()));
 const only = process.argv[2];
-for (const [which, w, h, out, q] of [['jet', 1920, 1080, 'hero-still.webp', 74], ['jet', 828, 1792, 'hero-still-mobile.webp', 72], ['globe', 1100, 1100, 'globe-still.webp', 82]]) {
+for (const [which, w, h, out, q] of [['jet', 1920, 1080, 'hero-still.webp', 74], ['jet', 828, 1466, 'hero-still-mobile.webp', 72], ['globe', 1100, 1100, 'globe-still.webp', 82]]) {
   if (only && !out.startsWith(only)) continue;
   await p.goto(`${url}/?still=${which}&w=${w}&h=${h}`);
   const data = await p.waitForFunction(() => window.__still, null, { timeout: 120000, polling: 500 }).then((x) => x.jsonValue());

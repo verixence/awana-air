@@ -1,11 +1,13 @@
-// AWANA AIR hero: CC0 business-jet glTF (tevy.dev) in a golden-hour sky with layered volumetric-look clouds,
-// a physically smoothed flight model (critically damped springs, bank into turns, pitch on climb),
-// camera follow, engine contrails, IBL (CC0 HDR sky), soft shadows + bloom on desktop.
-import { MeshStandardMaterial, DoubleSide,
+// AWANA AIR sky: ONE persistent fixed WebGL canvas behind the whole page.
+// CC0 business-jet glTF (tevy.dev) flies a scroll-choreographed path through every section: golden-hour IBL
+// (CC0 HDR sky), sky dome + layered clouds in the hero, contrails, critically damped motion (bank into turns,
+// pitch on climb, no snapping). The same renderer also draws the route globe (scissored into its box), so the
+// page never runs two WebGL contexts. The jet fades behind any text it would cover.
+import { MeshStandardMaterial, MeshBasicMaterial, DoubleSide,
   WebGLRenderer, Scene, PerspectiveCamera, Group, Mesh, SphereGeometry, PlaneGeometry, ShaderMaterial, BackSide, Vector3, Vector2,
-  Quaternion, Euler, Color, DirectionalLight, HemisphereLight, PMREMGenerator, SRGBColorSpace, ACESFilmicToneMapping,
+  Quaternion, Euler, DirectionalLight, HemisphereLight, PMREMGenerator, SRGBColorSpace, ACESFilmicToneMapping,
   EquirectangularReflectionMapping, PCFShadowMap, InstancedMesh, InstancedBufferAttribute, DataTexture, RGBAFormat,
-  LinearFilter, BufferGeometry, BufferAttribute, DynamicDrawUsage, MeshPhysicalMaterial, Box3, Matrix4, Object3D, LinearMipmapLinearFilter,
+  LinearFilter, BufferGeometry, BufferAttribute, DynamicDrawUsage, MeshPhysicalMaterial, Box3, LinearMipmapLinearFilter,
 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
@@ -17,29 +19,26 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 
 const UP = new Vector3(0, 1, 0);
-const FWD = new Vector3(1, 0, 0.42).normalize();            // flight direction in world space
-const RIGHT = new Vector3().crossVectors(FWD, UP).normalize(); // jet's right
+const FWD = new Vector3(1, 0, 0.42).normalize();            // hero flight direction in world space (cloud flow)
 const SUN = new Vector3(0.78, 0.1, -0.62).normalize();       // low golden sun, right of frame, behind
+const FOV = 30, JET_LEN = 10.5;
 
-// critically damped spring (Unity-style SmoothDamp), per component
+// critically damped spring (Unity-style SmoothDamp)
 function damp(cur, target, vel, smoothTime, dt) {
   const omega = 2 / smoothTime, x = omega * dt, exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
   const change = cur - target, temp = (vel + omega * change) * dt;
   const v = (vel - omega * temp) * exp;
   return [target + (change + temp) * exp, v];
 }
-class Spring3 {
-  constructor(v, t) { this.p = v.clone(); this.v = new Vector3(); this.t = t; }
-  step(target, dt) { for (const k of ['x', 'y', 'z']) { const [p, v] = damp(this.p[k], target[k], this.v[k], this.t, dt); this.p[k] = p; this.v[k] = v; } return this.p; }
-}
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 // ---------- sky dome ----------
 function skyMaterial() {
   return new ShaderMaterial({
-    side: BackSide, depthWrite: false, fog: false,
-    uniforms: { uSun: { value: SUN } },
+    side: BackSide, depthWrite: false, fog: false, transparent: true,
+    uniforms: { uSun: { value: SUN }, uAlpha: { value: 1 } },
     vertexShader: 'varying vec3 vDir; void main(){ vDir = normalize((modelMatrix*vec4(position,1.0)).xyz - cameraPosition); gl_Position = projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.0); gl_Position.z = gl_Position.w; }',
-    fragmentShader: `uniform vec3 uSun; varying vec3 vDir;
+    fragmentShader: `uniform vec3 uSun; uniform float uAlpha; varying vec3 vDir;
       void main(){
         vec3 d = normalize(vDir); float h = d.y; float s = max(dot(d, uSun), 0.0);
         vec3 zen = vec3(0.012,0.022,0.06), mid = vec3(0.035,0.06,0.14), hor = vec3(0.24,0.19,0.23), warm = vec3(1.0,0.55,0.24);
@@ -50,7 +49,7 @@ function skyMaterial() {
         col += warm * (pow(s, 12.0) * 0.6 + pow(s, 180.0) * 2.5 + pow(s, 2600.0) * 14.0) * smoothstep(-0.05, 0.02, h);
         vec3 below = mix(vec3(0.16,0.13,0.16), vec3(0.05,0.06,0.1), smoothstep(0.0, -0.35, h));
         col = mix(col, below + warm * band * 0.25 * pow(s, 2.0), smoothstep(0.0, -0.03, h));
-        gl_FragColor = vec4(col, 1.0);
+        gl_FragColor = vec4(col, uAlpha);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,
@@ -84,7 +83,7 @@ function makeClouds(count, rand) {
   const geo = new PlaneGeometry(1, 1);
   const mat = new ShaderMaterial({
     transparent: true, depthWrite: false,
-    uniforms: { uTex: { value: cloudAtlas() }, uSunV: { value: new Vector3() } },
+    uniforms: { uTex: { value: cloudAtlas() }, uSunV: { value: new Vector3() }, uVis: { value: 1 } },
     vertexShader: `attribute vec4 aCloud; attribute vec3 aOff; varying vec2 vUv; varying float vA; varying float vSunF; varying float vDist; uniform vec3 uSunV;
       void main(){
         vec4 mv = viewMatrix * vec4(aOff, 1.0);
@@ -93,7 +92,7 @@ function makeClouds(count, rand) {
         vec3 toC = normalize(mv.xyz); vSunF = pow(max(dot(toC, uSunV), 0.0), 6.0); vDist = -mv.z;
         gl_Position = projectionMatrix * mv;
       }`,
-    fragmentShader: `uniform sampler2D uTex; varying vec2 vUv; varying float vA; varying float vSunF; varying float vDist;
+    fragmentShader: `uniform sampler2D uTex; uniform float uVis; varying vec2 vUv; varying float vA; varying float vSunF; varying float vDist;
       void main(){
         vec4 t = texture2D(uTex, vUv); float d = t.r; if (d < 0.01) discard;
         vec3 shade = vec3(0.17,0.17,0.24), lit = vec3(1.0,0.82,0.62), rim = vec3(1.0,0.72,0.42);
@@ -102,7 +101,7 @@ function makeClouds(count, rand) {
         float near = smoothstep(1.5, 9.0, vDist);              // fade as we fly through
         float far = 1.0 - smoothstep(70.0, 110.0, vDist);
         col = mix(col, vec3(0.3,0.24,0.27), smoothstep(30.0, 100.0, vDist) * 0.7); // aerial perspective
-        gl_FragColor = vec4(col, d * vA * near * far);
+        gl_FragColor = vec4(col, d * vA * near * far * uVis);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
       }`,
@@ -136,9 +135,9 @@ function makeTrail(n) {
   for (let i = 0; i < n - 1; i++) { const k = i * 2; idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); }
   for (let i = 0; i < n; i++) { a[i * 2] = a[i * 2 + 1] = i / (n - 1); sd[i * 2] = 1; sd[i * 2 + 1] = -1; }
   const g = new BufferGeometry(); g.setAttribute('position', new BufferAttribute(pos, 3).setUsage(DynamicDrawUsage)); g.setAttribute('aT', new BufferAttribute(a, 1)); g.setAttribute('aS', new BufferAttribute(sd, 1)); g.setIndex(idx);
-  const m = new ShaderMaterial({ transparent: true, depthWrite: false, side: DoubleSide,
+  const m = new ShaderMaterial({ transparent: true, depthWrite: false, side: DoubleSide, uniforms: { uAlpha: { value: 1 }, uLen: { value: 1 } },
     vertexShader: 'attribute float aT; attribute float aS; varying float vT; varying float vS; void main(){ vT = aT; vS = aS; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
-    fragmentShader: 'varying float vT; varying float vS; void main(){ float a = (1.0 - vS * vS) * (1.0 - vS * vS) * smoothstep(0.02, 0.12, vT) * pow(1.0 - vT, 1.6) * 0.42 * (0.75 + 0.25 * sin(vT * 40.0)); gl_FragColor = vec4(vec3(1.0,0.95,0.9), a);\n#include <colorspace_fragment>\n}' });
+    fragmentShader: 'uniform float uAlpha; uniform float uLen; varying float vT; varying float vS; void main(){ float a = (1.0 - vS * vS) * (1.0 - vS * vS) * smoothstep(0.02, 0.12, vT) * pow(1.0 - vT, 1.6) * 0.42 * (0.75 + 0.25 * sin(vT * 40.0)); a *= 1.0 - smoothstep(uLen * 0.5, uLen, vT); gl_FragColor = vec4(vec3(1.0,0.95,0.9), a * uAlpha);\n#include <colorspace_fragment>\n}' });
   const mesh = new Mesh(g, m); mesh.frustumCulled = false;
   return { mesh, pts: Array.from({ length: n }, () => null), n };
 }
@@ -174,14 +173,35 @@ function prepareJet(gltf, { shadows, mobile }) {
       const p = m.isMeshPhysicalMaterial ? m : new MeshPhysicalMaterial(); if (p !== m) { MeshStandardMaterial.prototype.copy.call(p, m); p.defines = { STANDARD: '', PHYSICAL: '' }; } p.clearcoat = 1; p.clearcoatRoughness = 0.06; p.metalness = 0.32; p.roughness = 0.42; p.color.setRGB(0.95, 0.97, 1.0); o.material = p;
     } else if (m && /cabin_window/.test(m.name)) { m.roughness = 0.05; m.envMapIntensity = 1.4; }
   });
-  return { holder, nozzles };
+  holder.updateMatrixWorld(true);
+  // footprint samples: the 8 bounding-box corners of every part, in the jet's frame (tight, still conservative)
+  const pts = [], v = new Vector3(), meshes = [];
+  model.traverse((o) => { if (o.isMesh) meshes.push(o); });
+  const mats = [...new Set(meshes.map((o) => o.material))];
+  for (const o of meshes) {
+    if (!o.geometry.boundingBox) o.geometry.computeBoundingBox();
+    const bb = o.geometry.boundingBox;
+    for (let i = 0; i < 8; i++) { v.set(i & 1 ? bb.max.x : bb.min.x, i & 2 ? bb.max.y : bb.min.y, i & 4 ? bb.max.z : bb.min.z).applyMatrix4(o.matrixWorld); pts.push(v.x, v.y, v.z); }
+    // depth-only twin: when the jet is faded, only its front-most surfaces blend (no x-ray look)
+    const twin = new Mesh(o.geometry, new MeshBasicMaterial({ colorWrite: false }));
+    twin.visible = false; twin.renderOrder = -1; o.add(twin); o.userData.twin = twin;
+  }
+  const twins = meshes.map((o) => o.userData.twin);
+  return { holder, nozzles, local: new Float32Array(pts), mats, twins };
 }
 
-function layoutFor(aspect) {
-  const narrow = aspect < 1;
-  return narrow
-    ? { yaw: -0.5, base: new Vector3(0.3, 4.6, 0), cam: new Vector3(0, 2.6, 19), look: new Vector3(0, 1.2, 0), scale: Math.min(0.5, Math.max(0.38, aspect * 0.8)) }
-    : { yaw: -0.22, base: new Vector3(5.1 + (aspect - 1.6) * 2.2, 0.8, 0), cam: new Vector3(0, 2.2, 18), look: new Vector3(1.4, 0.9, 0), scale: 0.55 };
+
+// Hero camera (the reference frame the whole flight is placed in).
+function cameraFor(aspect) {
+  return aspect < 1 ? { cam: new Vector3(0, 2.6, 19), look: new Vector3(0, 1.6, 0), scale: 0.5 } : { cam: new Vector3(0, 2.2, 18), look: new Vector3(1.4, 0.9, 0), scale: 0.55 };
+}
+// Hero placement in screen terms: x, y = centre as a fraction of the viewport, w = jet width as a fraction of the viewport width.
+export function heroTrack(mobile, zone) {
+  if (mobile) {
+    const y = zone ? zone.y : 0.21, w = zone ? zone.w : 0.8;
+    return { x: 0.5, y, w, yaw: -0.5, sky: 1, cloud: 1, pitch: 0 };
+  }
+  return { x: 0.75, y: 0.5, w: 0.29, yaw: -0.22, sky: 1, cloud: 1, pitch: 0 };
 }
 
 function buildWorld(renderer, assets, { mobile, quality }) {
@@ -190,147 +210,212 @@ function buildWorld(renderer, assets, { mobile, quality }) {
   assets.hdr.mapping = EquirectangularReflectionMapping;
   scene.environment = pm.fromEquirectangular(assets.hdr).texture; pm.dispose();
   scene.environmentIntensity = 0.6;
-  scene.add(new Mesh(new SphereGeometry(400, 32, 16), skyMaterial()));
+  const sky = new Mesh(new SphereGeometry(400, 32, 16), skyMaterial()); sky.renderOrder = -10; scene.add(sky);
   scene.add(new HemisphereLight(0xb4c4ec, 0x2c2630, 0.6));
   const sun = new DirectionalLight(0xfff0e0, 2.6); sun.position.copy(SUN).multiplyScalar(40).add(new Vector3(0, 12, 26)); scene.add(sun);
   const rim = new DirectionalLight(0xffb878, 1.4); rim.position.copy(SUN).multiplyScalar(40); scene.add(rim);
   if (quality) {
     sun.castShadow = true; sun.shadow.mapSize.set(1024, 1024); sun.shadow.radius = 4; sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
-    const sc = sun.shadow.camera; sc.left = sc.bottom = -8; sc.right = sc.top = 8; sc.near = 1; sc.far = 90;
+    const sc = sun.shadow.camera; sc.left = sc.bottom = -8; sc.right = sc.top = 8; sc.near = 1; sc.far = 120;
   }
-  const { holder, nozzles } = prepareJet(assets.gltf, { shadows: quality, mobile });
+  const { holder, nozzles, local, mats, twins } = prepareJet(assets.gltf, { shadows: quality, mobile });
   const jet = new Group(); jet.add(holder); scene.add(jet);
   sun.target = jet; rim.target = jet;
   let seed = 7; const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const clouds = makeClouds(mobile ? 34 : 70, rand); scene.add(clouds.mesh);
   const trails = [makeTrail(mobile ? 40 : 70), makeTrail(mobile ? 40 : 70)]; trails.forEach((t) => scene.add(t.mesh));
-  return { scene, jet, holder, nozzles, clouds, trails, sun };
+  return { scene, sky, jet, holder, nozzles, local, mats, twins, clouds, trails, sun };
 }
 
-function createSim(world, camera, { getProgress, mobile }) {
-  const { jet, clouds, trails, nozzles } = world;
-  let L = layoutFor(camera.aspect);
-  const pos = new Spring3(L.base, 1.15), camS = new Spring3(L.cam, 1.6), lookS = new Spring3(L.look, 1.3);
-  let prog = 0, progV = 0, t = 0;
+const CORNERS = [...Array(8)].map(() => new Vector3());
+function createSim(world, camera, { getTrack, getTextRects = () => [], mobile, size }) {
+  const { jet, holder, clouds, trails, nozzles, local, mats, twins, sky } = world;
+  let C = cameraFor(camera.aspect);
+  const ref = new PerspectiveCamera(FOV, camera.aspect, 0.1, 900);
+  const relayout = () => { C = cameraFor(camera.aspect); ref.aspect = camera.aspect; ref.position.copy(C.cam); ref.lookAt(C.look); ref.updateProjectionMatrix(); ref.updateMatrixWorld(); };
+  relayout();
+  const T = { ...getTrack() }; const V = { x: 0, y: 0, w: 0, yaw: 0 };
+  const pointer = { x: 0, y: 0 }, camOff = new Vector3(), camV = new Vector3();
   const q = new Quaternion(), qt = new Quaternion(), e = new Euler(0, 0, 0, 'YXZ');
   const baseYaw = Math.atan2(FWD.x, FWD.z);
-  const pointer = { x: 0, y: 0 };
-  const tmp = new Vector3(), tgt = new Vector3(), m4 = new Matrix4(), sunV = new Vector3();
-  let speed = 16;
-  q.setFromEuler(e.set(0, baseYaw, 0)); jet.quaternion.copy(q);
-  function relayout() { L = layoutFor(camera.aspect); }
-  function step(dt) {
+  const prev = new Vector3(), vel = new Vector3(), tmp = new Vector3(), dir = new Vector3(), fwdRef = new Vector3(), sunV = new Vector3(), jf = new Vector3();
+  let t = 0, speed = 16, yawPrev = T.yaw, yawRate = 0, alpha = 1, bounds = null, first = true;
+  const out = { alpha: 1, bounds: null };
+
+  function place(target, x, y, w) {        // screen-space placement -> world position on the reference camera
+    const visW = 2 * Math.tan((FOV * Math.PI) / 360) * ref.aspect;
+    const d = (JET_LEN * C.scale * 0.6) / Math.max(0.05, w * visW);
+    dir.set(x * 2 - 1, 1 - y * 2, 0.5).unproject(ref).sub(ref.position).normalize();
+    ref.getWorldDirection(fwdRef);
+    return target.copy(ref.position).addScaledVector(dir, d / Math.max(0.2, dir.dot(fwdRef)));
+  }
+  const P3 = new Vector3();
+  function footprint(W, H) {               // projected footprint of the jet, in CSS px of the canvas
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    jet.updateWorldMatrix(true, true);
+    const M = holder.matrixWorld;
+    for (let i = 0; i < local.length; i += 3) {
+      const c = P3.set(local[i], local[i + 1], local[i + 2]).applyMatrix4(M).project(camera);
+      const sx = ((c.x + 1) / 2) * W, sy = ((1 - c.y) / 2) * H;
+      if (sx < x0) x0 = sx; if (sx > x1) x1 = sx; if (sy < y0) y0 = sy; if (sy > y1) y1 = sy;
+    }
+    return { x0, y0, x1, y1 };
+  }
+  function step(dt, wall = dt) {          // wall: real elapsed time (uncapped), used for the readability fade
     t += dt;
-    [prog, progV] = damp(prog, getProgress(), progV, 0.45, dt);           // eased, no overshoot
-    // target: base + slow S-turn wander + scroll climb-away + pointer
-    const wander = Math.sin(t * 0.21) * 1.1 + Math.sin(t * 0.087 + 1.3) * 0.6;
-    tgt.copy(L.base)
-      .addScaledVector(RIGHT, wander * (mobile ? 0.45 : 0.6))
-      .addScaledVector(UP, Math.sin(t * 0.33 + 0.7) * 0.32 - pointer.y * 0.8 + prog * 5.5)
-      .addScaledVector(FWD, prog * 4);
-    jet.position.copy(pos.step(tgt, dt));
-    jet.scale.setScalar(L.scale);
-    const vLat = pos.v.dot(RIGHT), vUp = pos.v.y;
-    const bank = Math.max(-0.75, Math.min(0.75, vLat * 0.55));            // bank into the turn
-    const pitch = -Math.max(-0.35, Math.min(0.35, vUp * 0.22 + prog * 0.18)); // nose up on climb
-    qt.setFromEuler(e.set(pitch, baseYaw + L.yaw + vLat * 0.06, bank + 0.12));
-    q.slerp(qt, 1 - Math.exp(-dt * 3.2)); jet.quaternion.copy(q);
-    // camera follow with lag
-    tmp.copy(L.cam).addScaledVector(jet.position.clone().sub(L.base), 0.22).add(new Vector3(pointer.x * 0.8, -pointer.y * 0.4, 0)).addScaledVector(UP, prog * 1.2);
-    camera.position.copy(camS.step(tmp, dt));
-    tmp.copy(L.look).addScaledVector(jet.position.clone().sub(L.base), 0.45);
-    camera.lookAt(lookS.step(tmp, dt));
-    // airflow
-    speed += ((16 + prog * 14) - speed) * (1 - Math.exp(-dt * 2));
+    const g = getTrack();
+    const st = mobile ? 0.5 : 0.62;                      // eased, critically damped: no overshoot, no snapping
+    for (const k of ['x', 'y', 'w', 'yaw']) { const [p, v] = damp(T[k], g[k], V[k], k === 'yaw' ? 0.9 : st, dt); T[k] = p; V[k] = v; }
+    T.sky = g.sky; T.cloud = g.cloud;
+    // gentle wander so the jet is always flying, even when the page is still
+    const wx = (Math.sin(t * 0.21) * 0.012 + Math.sin(t * 0.087 + 1.3) * 0.008) * (mobile ? 0.6 : 1);
+    const wy = Math.sin(t * 0.33 + 0.7) * 0.011;
+    place(tmp, T.x + wx, T.y + wy, T.w);
+    if (first) { prev.copy(tmp); first = false; }
+    vel.subVectors(tmp, prev).divideScalar(Math.max(dt, 1e-3)); prev.copy(tmp);
+    jet.position.copy(tmp); jet.scale.setScalar(C.scale);
+    yawRate += ((T.yaw - yawPrev) / Math.max(dt, 1e-3) - yawRate) * (1 - Math.exp(-dt * 6)); yawPrev = T.yaw;
+    const bank = clamp(-yawRate * 0.9 + 0.12, -0.75, 0.75);           // bank into the turn
+    const pitch = -clamp(vel.y * 0.05 + (g.pitch || 0), -0.32, 0.32); // nose up on climb, down on descent
+    qt.setFromEuler(e.set(pitch, baseYaw + T.yaw, bank));
+    q.slerp(qt, 1 - Math.exp(-dt * 4)); jet.quaternion.copy(q);
+    // camera: fixed frame + soft pointer parallax
+    tmp.set(pointer.x * 0.8, -pointer.y * 0.4, 0);
+    for (const k of ['x', 'y', 'z']) { const [p, v] = damp(camOff[k], tmp[k], camV[k], 0.8, dt); camOff[k] = p; camV[k] = v; }
+    camera.position.copy(C.cam).add(camOff); camera.lookAt(C.look);
+    camera.updateMatrixWorld();
+    // sky + clouds
+    sky.visible = T.sky > 0.002; sky.material.uniforms.uAlpha.value = T.sky;
+    clouds.mesh.visible = T.cloud > 0.002; clouds.mesh.material.uniforms.uVis.value = T.cloud;
+    speed += ((16 + (1 - T.sky) * 8) - speed) * (1 - Math.exp(-dt * 2));
     const flow = speed * dt;
     const arr = clouds.off;
     clouds.items.forEach((it, i) => {
       it.s -= flow * (it.layer === 'high' ? 0.6 : 1);
       if (it.s < -60) respawn(it, Math.random, false);
-      tmp.copy(FWD).multiplyScalar(it.s).addScaledVector(RIGHT, -it.lat).setY(it.y);
+      tmp.copy(FWD).multiplyScalar(it.s).addScaledVector(new Vector3().crossVectors(FWD, UP).normalize(), -it.lat).setY(it.y);
       arr[i * 3] = tmp.x; arr[i * 3 + 1] = tmp.y; arr[i * 3 + 2] = tmp.z;
     });
     clouds.mesh.geometry.attributes.aOff.needsUpdate = true;
-    camera.updateMatrixWorld();
     sunV.copy(SUN).transformDirection(camera.matrixWorldInverse);
     clouds.mesh.material.uniforms.uSunV.value.copy(sunV);
-    // contrails from each nacelle exhaust
+    // readability: fade the jet (and its trails) whenever its footprint would cover text
+    const W = size().w, H = size().h;
+    bounds = footprint(W, H);
+    const m = 28; let hit = false;
+    const onScreen = bounds.x1 > 0 && bounds.x0 < W && bounds.y1 > 0 && bounds.y0 < H;
+    if (onScreen) for (const r of getTextRects()) { if (r.right > bounds.x0 - m && r.left < bounds.x1 + m && r.bottom > bounds.y0 - m && r.top < bounds.y1 + m) { hit = true; break; } }
+    const want = hit ? 0.16 : 1;
+    alpha += (want - alpha) * (1 - Math.exp(-wall / (want < alpha ? 0.05 : 0.3)));
+    if (want < alpha && wall > 0.12) alpha = want;                     // slow frame: never let the jet linger over text
+    const transparent = alpha < 0.995;
+    if (mats[0].transparent !== transparent) { for (const mt of mats) { mt.transparent = transparent; mt.needsUpdate = true; } for (const tw of twins) tw.visible = transparent; }
+    for (const mt of mats) mt.opacity = alpha;
+    // contrails from each nacelle exhaust, advected backwards along the jet's heading
+    jf.set(0, 0, 1).applyQuaternion(q).normalize();
     trails.forEach((tr, k) => {
+      tr.mesh.material.uniforms.uAlpha.value = alpha * (0.55 + 0.45 * T.sky);
+      tr.mesh.material.uniforms.uLen.value = 0.3 + 0.7 * T.sky;          // short trails over the page, long in the hero sky
       const nz = nozzles[k]; if (!nz) return;
       nz.updateWorldMatrix(true, false);
-      const box = new Box3().setFromObject(nz); const p = box.getCenter(new Vector3()); p.addScaledVector(FWD.clone().applyQuaternion(q).normalize(), 0); // centre
-      const back = new Vector3(0, 0, -1).applyQuaternion(q); p.addScaledVector(back, (box.max.x - box.min.x) * 0.55);
-      for (let i = tr.n - 1; i > 0; i--) tr.pts[i] = tr.pts[i - 1] ? tr.pts[i - 1].addScaledVector(FWD, -flow) : null;
+      const box = new Box3().setFromObject(nz); const p = box.getCenter(new Vector3());
+      p.addScaledVector(jf, -(box.max.x - box.min.x) * 0.55);
+      for (let i = tr.n - 1; i > 0; i--) tr.pts[i] = tr.pts[i - 1] ? tr.pts[i - 1].addScaledVector(jf, -flow) : null;
       tr.pts[0] = p;
       const P = tr.mesh.geometry.attributes.position.array; const camPos = camera.position;
       for (let i = 0; i < tr.n; i++) {
         const a = tr.pts[i] || p, b = tr.pts[Math.min(i + 1, tr.n - 1)] || a;
-        const dir = tmp.copy(b).sub(a); if (dir.lengthSq() < 1e-8) dir.copy(FWD).negate();
-        const side = dir.cross(new Vector3().subVectors(camPos, a)).normalize().multiplyScalar((0.05 + Math.sqrt(i / tr.n) * 0.4) * L.scale);
+        const d = tmp.copy(b).sub(a); if (d.lengthSq() < 1e-8) d.copy(jf).negate();
+        const side = d.cross(new Vector3().subVectors(camPos, a)).normalize().multiplyScalar((0.05 + Math.sqrt(i / tr.n) * 0.4) * C.scale);
         P.set([a.x + side.x, a.y + side.y, a.z + side.z, a.x - side.x, a.y - side.y, a.z - side.z], i * 6);
       }
       tr.mesh.geometry.attributes.position.needsUpdate = true;
     });
+    out.alpha = alpha; out.bounds = onScreen ? bounds : null; out.sky = T.sky;
   }
-  return { step, relayout, pointer };
+  return { step, relayout, pointer, out };
 }
 
-export async function initHero(container, { mobile = false, getProgress = () => 0, force = false, onFail = () => {}, manual = false } = {}) {
+// Fixed full-viewport canvas. Returns a controller, or nothing after calling onFail.
+export async function initSky(container, { mobile = false, getTrack, getTextRects, force = false, onFail = () => {}, onReady = () => {}, manual = false } = {}) {
   if (!container) return;
   let renderer;
-  try { renderer = new WebGLRenderer({ antialias: true, powerPreference: mobile ? 'low-power' : 'high-performance' }); } catch { onFail(); return; }
+  try { renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: mobile ? 'low-power' : 'high-performance' }); } catch { onFail(); return; }
+  if (!renderer.getContext()) { onFail(); return; }
   const quality = !mobile;
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.6 : 1.5));
+  renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = SRGBColorSpace; renderer.toneMapping = ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
   if (quality) { renderer.shadowMap.enabled = true; renderer.shadowMap.type = PCFShadowMap; }
   let assets;
   try { assets = await loadAssets(renderer, mobile); } catch (err) { renderer.dispose(); onFail(); return; }
   const world = buildWorld(renderer, assets, { mobile, quality });
-  const camera = new PerspectiveCamera(30, 1, 0.1, 900);
+  const camera = new PerspectiveCamera(FOV, 1, 0.1, 900);
   renderer.domElement.setAttribute('aria-hidden', 'true');
   container.append(renderer.domElement);
-  let composer = null;
+  let composer = null, bloom = null;
   if (quality) {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(world.scene, camera));
-    composer.addPass(new UnrealBloomPass(new Vector2(256, 256), 0.32, 0.55, 0.82));
+    composer.addPass((bloom = new UnrealBloomPass(new Vector2(256, 256), 0.32, 0.55, 0.82)));
     composer.addPass(new OutputPass());
   }
-  const sim = createSim(world, camera, { getProgress, mobile });
+  let W = 1, H = 1;
+  const sim = createSim(world, camera, { getTrack, getTextRects, mobile, size: () => ({ w: W, h: H }) });
   const resize = () => {
     const w = container.clientWidth, h = container.clientHeight; if (!w || !h) return;
-    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); sim.relayout();
-    if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
+    W = w; H = h;
+    const cap = Math.min(devicePixelRatio || 1, mobile ? 1.5 : 1.5, Math.sqrt(2.4e6 / (w * h)));  // bound the pixel count on big screens
+    renderer.setPixelRatio(cap); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); sim.relayout();
+    if (composer) { composer.setPixelRatio(cap); composer.setSize(w, h); }
   };
   resize(); new ResizeObserver(resize).observe(container);
-  for (let i = 0; i < 240; i++) sim.step(1 / 60);                       // same settle as the pre-rendered still, so the cross-fade matches
+  for (let i = 0; i < 240; i++) sim.step(1 / 60);                       // same settle as the pre-rendered still
   if (!mobile) addEventListener('pointermove', (ev) => { sim.pointer.x = ev.clientX / innerWidth - 0.5; sim.pointer.y = ev.clientY / innerHeight - 0.5; }, { passive: true });
 
-  if (manual) {   // deterministic fixed-step rendering, used only to record the hero clips (?rec)
-    const draw = () => (composer ? composer.render() : renderer.render(world.scene, camera));
-    draw(); container.classList.add('ready');
-    return { step(dt = 1 / 30, pointer) { if (pointer) Object.assign(sim.pointer, pointer); sim.step(dt); draw(); } };
+  // optional extra layer drawn into the same canvas (the globe), scissored to its element's box
+  let layer = null;
+  function draw() {
+    if (composer && sim.out.sky > 0.98) { composer.render(); return; }    // hero: bloom; elsewhere: direct (keeps alpha clean)
+    renderer.autoClear = false; renderer.setScissorTest(false); renderer.setViewport(0, 0, W, H); renderer.clear();
+    if (layer) {
+      const r = layer.el.getBoundingClientRect();
+      if (r.bottom > 0 && r.top < H && r.width > 0) {
+        renderer.setViewport(r.left, H - r.bottom, r.width, r.height); renderer.setScissor(r.left, H - r.bottom, r.width, r.height); renderer.setScissorTest(true);
+        layer.render(renderer, r.width / r.height);
+        renderer.setScissorTest(false); renderer.setViewport(0, 0, W, H); renderer.clearDepth();
+      }
+    }
+    renderer.render(world.scene, camera);
+    renderer.autoClear = true;
   }
-  let running = false, visible = true, last = performance.now(), frames = 0, slow = 0, shown = false;
+  const api = {
+    get state() { return { alpha: sim.out.alpha, bounds: sim.out.bounds, sky: sim.out.sky }; },
+    addLayer(l) { layer = l; },
+    step(dt = 1 / 30, pointer) { if (pointer) Object.assign(sim.pointer, pointer); if (layer) layer.tick(dt); sim.step(dt); draw(); },
+  };
+  if (manual) { draw(); onReady(); return api; }
+
+  let running = false, last = performance.now(), frames = 0, slow = 0, shown = false;
   function frame(now) {
     if (!running) return;
     const raw = now - last;
     if (mobile && raw < 30) { requestAnimationFrame(frame); return; }     // ~30fps on phones
     last = now;
-    sim.step(Math.min(0.05, raw / 1000));
-    composer ? composer.render() : renderer.render(world.scene, camera);
+    const dt = Math.min(0.05, raw / 1000);
+    if (layer) layer.tick(dt);
+    sim.step(dt, raw / 1000); draw();
     frames++;
-    if (!shown) { shown = true; container.classList.add('ready'); }
-    if (!force && frames > 5 && frames < 60) { if (raw > 60) slow++; if (slow > 30) { running = false; renderer.dispose(); container.replaceChildren(); container.classList.remove('ready'); onFail(); return; } }
+    if (!shown) { shown = true; onReady(); }
+    if (!force && frames > 5 && frames < 60) { if (raw > 60) slow++; if (slow > 30) { running = false; renderer.dispose(); container.replaceChildren(); onFail(); return; } }
     requestAnimationFrame(frame);
   }
-  const update = () => { const want = visible && !document.hidden; if (want && !running) { running = true; last = performance.now(); requestAnimationFrame(frame); } else if (!want) running = false; };
-  new IntersectionObserver((en) => { visible = en[0].isIntersecting; update(); }).observe(container);
-  document.addEventListener('visibilitychange', update);
+  const update = () => { const want = !document.hidden; if (want && !running) { running = true; last = performance.now(); requestAnimationFrame(frame); } else if (!want) running = false; };
+  document.addEventListener('visibilitychange', update);                // pauses when the tab is hidden
   update();
+  return api;
 }
 
-// Pre-rendered still from the real scene (used for no-WebGL / low-power / reduced motion / Save-Data).
+// Pre-rendered still from the real scene (no-WebGL / software GL / reduced motion / Save-Data).
 export async function renderStill(w = 1920, h = 1080) {
   const renderer = new WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(1); renderer.setSize(w, h, false);
@@ -338,8 +423,9 @@ export async function renderStill(w = 1920, h = 1080) {
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = PCFShadowMap;
   const assets = await loadAssets(renderer, false);
   const world = buildWorld(renderer, assets, { mobile: false, quality: true });
-  const camera = new PerspectiveCamera(30, w / h, 0.1, 900);
-  const sim = createSim(world, camera, { getProgress: () => 0, mobile: w < h });
+  const camera = new PerspectiveCamera(FOV, w / h, 0.1, 900);
+  const mobile = w < h;
+  const sim = createSim(world, camera, { getTrack: () => heroTrack(mobile), mobile, size: () => ({ w, h }) });
   for (let i = 0; i < 240; i++) sim.step(1 / 60);
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(world.scene, camera));

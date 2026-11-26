@@ -14,24 +14,16 @@ const ROUTES = [['delhi', 'london'], ['delhi', 'dubai'], ['mumbai', 'male'], ['m
 const DEG = Math.PI / 180;
 const ll = (lat, lng, r = 1) => { const phi = (90 - lat) * DEG, th = (lng + 180) * DEG; return new Vector3(-r * Math.sin(phi) * Math.cos(th), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(th)); };
 
-export async function initGlobe(el, { mobile = false, still = false, force = false, onFail = () => {}, size = null } = {}) {
-  const res = await fetch('/assets/data/land-dots.bin');
-  const dots = new Int16Array(await res.arrayBuffer());
-
-  const renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power', preserveDrawingBuffer: !!size });
-  renderer.setPixelRatio(size ? 1 : Math.min(devicePixelRatio || 1, mobile ? 1.25 : 1.5));
-  renderer.outputColorSpace = SRGBColorSpace;
-  renderer.domElement.setAttribute('aria-hidden', 'true');
-  el.append(renderer.domElement);
+function buildGlobe(dots, { mobile, still, shared }) {
   const scene = new Scene();
   const camera = new PerspectiveCamera(32, 1, 0.1, 50); camera.position.set(0, 0, 4.6);
 
   const globe = new Group(); scene.add(globe);
-  globe.add(new Mesh(new SphereGeometry(0.995, 48, 32), new MeshBasicMaterial({ color: 0x0a1638 })));
+  globe.add(new Mesh(new SphereGeometry(0.995, 48, 32), new MeshBasicMaterial({ color: 0x0a1638, toneMapped: !shared })));
   const pos = new Float32Array((dots.length / 2) * 3);
   for (let i = 0; i < dots.length / 2; i++) { const v = ll(dots[i * 2] / 100, dots[i * 2 + 1] / 100, 1.002); pos.set([v.x, v.y, v.z], i * 3); }
   const dg = new BufferGeometry(); dg.setAttribute('position', new Float32BufferAttribute(pos, 3));
-  globe.add(new Points(dg, new PointsMaterial({ color: 0x9fb0d4, size: mobile ? 0.022 : 0.017, transparent: true, opacity: 0.8 })));
+  globe.add(new Points(dg, new PointsMaterial({ color: 0x9fb0d4, size: mobile ? 0.022 : 0.017, transparent: true, opacity: 0.8, toneMapped: !shared })));
 
   // atmosphere
   const atm = new ShaderMaterial({
@@ -61,8 +53,8 @@ export async function initGlobe(el, { mobile = false, still = false, force = fal
     globe.add(new Mesh(new TubeGeometry(curve, mobile ? 40 : 64, 0.0055, 5, false), mat));
   });
   // city markers
-  const dotMat = new MeshBasicMaterial({ color: 0xf3d79b });
-  const ringMat = new MeshBasicMaterial({ color: 0xf3d79b, transparent: true, opacity: 0.6, side: DoubleSide, depthWrite: false });
+  const dotMat = new MeshBasicMaterial({ color: 0xf3d79b, toneMapped: !shared });
+  const ringMat = new MeshBasicMaterial({ color: 0xf3d79b, transparent: true, opacity: 0.6, side: DoubleSide, depthWrite: false, toneMapped: !shared });
   const rings = [];
   Object.values(CITIES).forEach(([la, lo], i) => {
     const p = ll(la, lo, 1.004);
@@ -75,27 +67,48 @@ export async function initGlobe(el, { mobile = false, still = false, force = fal
   globe.rotation.set(0.32, base, 0);
   atmo.rotation.copy(globe.rotation);
 
-  function resize() { const w = size || el.clientWidth, h = size || el.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
-  resize(); if (!size) new ResizeObserver(() => { resize(); if (still) renderer.render(scene, camera); }).observe(el);
-
-  // drag to spin
-  let drag = null, vel = 0;
-  el.addEventListener('pointerdown', (e) => { drag = { x: e.clientX }; el.setPointerCapture(e.pointerId); });
-  el.addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - drag.x; drag.x = e.clientX; globe.rotation.y += dx * 0.006; vel = dx * 0.0006; if (still) renderer.render(scene, camera); });
-  const end = () => { drag = null; }; el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
-
-  renderer.render(scene, camera); el.classList.add('ready');
-  if (size) return renderer.domElement.toDataURL('image/png');
-  if (still) return;
-
-  let visible = true, running = false, last = performance.now(), t = 0, frames = 0, slow = 0;
-  function frame(now) {
-    if (!running) return;
-    const rawMs = now - last; const dt = Math.min(0.05, rawMs / 1000); last = now; t += dt;
+  let t = 0, vel = 0, drag = null;
+  function tick(dt) {
+    t += dt;
     if (!drag) { globe.rotation.y += dt * 0.09 + vel; vel *= 0.95; }
     arcMats.forEach((m) => (m.uniforms.uT.value = t));
     rings.forEach((r) => { const k = (t * 0.6 + r.userData.o) % 1; r.scale.setScalar(1 + k * 2.2); r.material.opacity = 0.7 * (1 - k); });
-    renderer.render(scene, camera);
+  }
+  function attachDrag(el, onMove = () => {}) {
+    el.addEventListener('pointerdown', (e) => { drag = { x: e.clientX }; el.setPointerCapture(e.pointerId); });
+    el.addEventListener('pointermove', (e) => { if (!drag) return; const dx = e.clientX - drag.x; drag.x = e.clientX; globe.rotation.y += dx * 0.006; vel = dx * 0.0006; onMove(); });
+    const end = () => { drag = null; }; el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+  }
+  return { scene, camera, tick, attachDrag, isDragging: () => !!drag };
+}
+const loadDots = async () => new Int16Array(await (await fetch('/assets/data/land-dots.bin')).arrayBuffer());
+
+// Layer for the shared page renderer (sky3d.js draws it scissored into the element's box: one WebGL context for the page).
+export async function createGlobeLayer(el, { mobile = false } = {}) {
+  const g = buildGlobe(await loadDots(), { mobile, still: false, shared: true });
+  g.attachDrag(el);
+  return { el, tick: g.tick, render(renderer, aspect) { g.camera.aspect = aspect; g.camera.updateProjectionMatrix(); renderer.render(g.scene, g.camera); } };
+}
+
+export async function initGlobe(el, { mobile = false, still = false, force = false, onFail = () => {}, size = null } = {}) {
+  const dots = await loadDots();
+  const renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power', preserveDrawingBuffer: !!size });
+  renderer.setPixelRatio(size ? 1 : Math.min(devicePixelRatio || 1, mobile ? 1.25 : 1.5));
+  renderer.outputColorSpace = SRGBColorSpace;
+  renderer.domElement.setAttribute('aria-hidden', 'true');
+  el.append(renderer.domElement);
+  const { scene, camera, tick, attachDrag } = buildGlobe(dots, { mobile, still, shared: false });
+  function resize() { const w = size || el.clientWidth, h = size || el.clientHeight; if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  resize(); if (!size) new ResizeObserver(() => { resize(); if (still) renderer.render(scene, camera); }).observe(el);
+  attachDrag(el, () => { if (still) renderer.render(scene, camera); });
+  renderer.render(scene, camera); el.classList.add('ready');
+  if (size) return renderer.domElement.toDataURL('image/png');
+  if (still) return;
+  let visible = true, running = false, last = performance.now(), frames = 0, slow = 0;
+  function frame(now) {
+    if (!running) return;
+    const rawMs = now - last; const dt = Math.min(0.05, rawMs / 1000); last = now;
+    tick(dt); renderer.render(scene, camera);
     frames++;
     if (!force && frames > 5 && frames < 50) { if (rawMs > 55) slow++; if (slow > 25) { running = false; renderer.domElement.remove(); el.classList.remove('ready'); onFail(); return; } }
     requestAnimationFrame(frame);

@@ -1,4 +1,4 @@
-// AWANA AIR test suite (v2): iPhone 14 / iPhone 15 Pro (WebKit), Pixel 7 (Chromium), desktop Chromium + WebKit.
+// AWANA AIR test suite (v3: persistent fixed 3D canvas): iPhone 14 / iPhone 15 Pro (WebKit), Pixel 7 (Chromium), desktop Chromium + WebKit.
 // Layout-integrity checks at every scroll step (heading overlap, header occlusion, lingering transforms),
 // fast fling, mobile menu, reduced motion, no-WebGL, plus form, links, SEO, axe, overflow and credit.
 import { chromium, webkit, devices } from 'playwright';
@@ -12,7 +12,7 @@ const BASE = process.env.BASE_URL || null;
 const SHOTS = process.env.SHOTS !== '0';
 const { srv, url: local } = BASE ? { srv: null, url: null } : await serve(ROOT);
 const URL0 = BASE || local;
-const STEPDIR = path.join(ROOT, 'screens/v2/steps');
+const STEPDIR = path.join(ROOT, 'screens/v3/steps');
 fs.mkdirSync(STEPDIR, { recursive: true });
 const results = []; let failed = 0;
 const ok = (name, cond, info = '') => { results.push({ name, pass: !!cond, info: String(info).slice(0, 600) }); if (!cond) { failed++; console.log('  FAIL', name, String(info).slice(0, 600)); } };
@@ -26,6 +26,7 @@ const TARGETS = [
   { id: 'desktop-chromium', type: chromium, opts: { viewport: { width: 1440, height: 900 } }, mobile: false },
   { id: 'desktop-webkit', type: webkit, opts: { viewport: { width: 1440, height: 900 } }, mobile: false },
 ];
+if (process.env.ONLY) TARGETS.splice(0, TARGETS.length, ...TARGETS.filter((t) => process.env.ONLY.split(',').includes(t.id)));
 const SOCIAL = ['https://whatsapp.com/channel/0029Vb90dLhJJhzhRk4PIx06', 'https://www.instagram.com/awana_air', 'https://www.facebook.com/share/19qmNAzfaX/'];
 
 // In-page layout probe: visible headings must not intersect each other; any heading under the fixed
@@ -67,7 +68,7 @@ const PROBE = () => {
 const TRANSFORMS = () => {
   const bad = [];
   document.querySelectorAll('main *, footer *, .site-header, .mobile-bar, .wa-bubble *').forEach((el) => {
-    if (el.closest('canvas') || el.tagName === 'CANVAS') return;
+    if (el.closest('canvas') || el.tagName === 'CANVAS' || el.closest('.sky')) return;
     const t = getComputedStyle(el).transform;
     if (t && t !== 'none') bad.push((el.className || el.tagName) + ' ' + t);
   });
@@ -75,8 +76,22 @@ const TRANSFORMS = () => {
   return { bad, hiddenReveal };
 };
 
+// Jet readability: the jet's projected footprint (from the scene) must not cover any paragraph or heading
+// unless it is faded to <= 0.25 opacity.
+const JETCHECK = () => {
+  const s = window.__sky && window.__sky.state;
+  if (!s || !document.documentElement.classList.contains('sky-live')) return { live: false };
+  const b = s.bounds; if (!b) return { live: true, alpha: s.alpha, hits: [] };
+  const range = document.createRange(); const hits = [];
+  document.querySelectorAll('main p, main h1, main h2, main h3, footer p').forEach((el) => {
+    range.selectNodeContents(el); const r = range.getBoundingClientRect();
+    if (r.width < 1 || r.bottom < 0 || r.top > innerHeight) return;
+    if (r.right > b.x0 && r.left < b.x1 && r.bottom > b.y0 && r.top < b.y1) hits.push(el.tagName + ':' + el.textContent.trim().slice(0, 20));
+  });
+  return { live: true, alpha: s.alpha, bounds: b, hits };
+};
 async function stepScroll(page, tag, shots) {
-  const issues = [];
+  const issues = [], jet = { steps: 0, live: 0, visible: 0, faded: 0, bad: [] };
   const H = await page.evaluate(() => document.documentElement.scrollHeight);
   let i = 0;
   for (let y = 0; y <= H; y += 400, i++) {
@@ -84,9 +99,11 @@ async function stepScroll(page, tag, shots) {
     await sleep(380);
     const pr = await page.evaluate(PROBE);
     if (pr.overlaps.length || pr.headerHits.length) issues.push(`y=${pr.y}: ${pr.overlaps.concat(pr.headerHits).join(' | ')}`);
+    const jc = await page.evaluate(JETCHECK); jet.steps++;
+    if (jc.live) { jet.live++; if (jc.bounds && jc.alpha > 0.25) jet.visible++; if (jc.hits && jc.hits.length) { if (jc.alpha <= 0.25) jet.faded++; else jet.bad.push(`y=${pr.y} a=${jc.alpha.toFixed(2)} ${jc.hits.join(',')}`); } }
     if (shots) await page.screenshot({ path: path.join(STEPDIR, `${tag}-${String(i).padStart(2, '0')}.png`) });
   }
-  return issues;
+  return { issues, jet };
 }
 async function fling(page, mobile) {
   if (mobile) {
@@ -119,17 +136,19 @@ for (const T of TARGETS) {
 
     const cls = await page.evaluate(() => document.documentElement.className);
     if (mode === 'force3d') {
-      const ready = await page.waitForFunction(() => document.querySelector('#hero-canvas').classList.contains('ready'), null, { timeout: 25000 }).then(() => true).catch(() => false);
+      const ready = await page.waitForFunction(() => document.documentElement.classList.contains('sky-live') && window.__sky, null, { timeout: 25000 }).then(() => true).catch(() => false);
       const tReady = Date.now() - t0;
-      const dpr = await page.evaluate(() => { const c = document.querySelector('#hero-canvas canvas'); return c ? c.width / c.clientWidth : null; });
-      ok(`${tag} hero 3D jet visible without interaction (${tReady} ms on software GL)`, ready && /\bgl\b/.test(cls), cls);
-      ok(`${tag} DPR capped (<=1.6 phone, <=1.5 desktop)`, dpr !== null && dpr <= (T.opts.isMobile ? 1.61 : 1.51), dpr);
+      const dpr = await page.evaluate(() => { const c = document.querySelector('#sky canvas'); return c ? c.width / c.clientWidth : null; });
+      ok(`${tag} site-wide 3D jet live without interaction (${tReady} ms on software GL)`, ready && /\bgl\b/.test(cls), cls);
+      ok(`${tag} DPR capped (<=1.5)`, dpr !== null && dpr <= 1.51, dpr);
+      const one = await page.evaluate(() => document.querySelectorAll('canvas').length);
+      ok(`${tag} a single WebGL canvas on the page`, one === 1, one);
     } else if (mode === 'default') {
       // the box has no GPU: the head probe must pick the static render, never a blank hero
       const st = await page.evaluate(() => { const s = document.querySelector('.hero-still'); return { cls: document.documentElement.className, disp: getComputedStyle(s).display, bg: getComputedStyle(s).backgroundImage }; });
       ok(`${tag} no-GPU device gets the static jet render`, /nogl/.test(st.cls) ? st.disp === 'block' && /hero-still(-mobile)?\.webp/.test(st.bg) : true, JSON.stringify(st));
     } else {
-      const st = await page.evaluate(() => ({ cls: document.documentElement.className, still: getComputedStyle(document.querySelector('.hero-still')).display, canvas: !!document.querySelector('#hero-canvas canvas') }));
+      const st = await page.evaluate(() => ({ cls: document.documentElement.className, still: getComputedStyle(document.querySelector('.hero-still')).display, canvas: !!document.querySelector('canvas') }));
       ok(`${tag} reduced motion: no motion/lenis/WebGL, static render shown`, !/motion|lenis|\bgl\b/.test(st.cls.replace('nogl', '')) && st.still === 'block' && !st.canvas, JSON.stringify(st));
     }
     ok(`${tag} Lenis ${T.mobile ? 'off on touch' : 'only on desktop'}`, T.mobile ? !/lenis/.test(cls) : mode === 'reduced' ? !/lenis/.test(cls) : /lenis/.test(cls), cls);
@@ -145,8 +164,29 @@ for (const T of TARGETS) {
 
     // step scroll: overlap + header occlusion at every 400px step
     await sleep(1200);
-    const issues = await stepScroll(page, `${T.id}-${mode}`, SHOTS && mode !== 'reduced');
+    const { issues, jet } = await stepScroll(page, `${T.id}-${mode}`, SHOTS && mode !== 'reduced');
     ok(`${tag} step-scroll: no heading overlaps / no heading drawn over the header`, issues.length === 0, issues.join(' || '));
+    ok(`${tag} jet never covers body text at full opacity (steps ${jet.steps}, live ${jet.live}, jet visible ${jet.visible}, faded over text ${jet.faded})`, jet.bad.length === 0, jet.bad.join(' || '));
+    if (mode === 'force3d') ok(`${tag} jet actually flies through the page (visible at ${jet.visible} of ${jet.steps} steps)`, jet.live === jet.steps && jet.visible >= (T.mobile ? 1 : 3), JSON.stringify({ ...jet, bad: jet.bad.length }));
+    // fixed canvas: below the content, never hit-testable; every CTA receives the click
+    const hit = await page.evaluate(async () => {
+      const sky = document.getElementById('sky'); const cs = getComputedStyle(sky);
+      const cv = sky.querySelector('canvas');
+      const info = { pos: cs.position, z: cs.zIndex, pe: cs.pointerEvents, cpe: cv ? getComputedStyle(cv).pointerEvents : 'n/a', first: sky.compareDocumentPosition(document.getElementById('main')) & Node.DOCUMENT_POSITION_FOLLOWING ? 'before-main' : 'after-main', misses: [], n: 0 };
+      const sel = '.hero-ctas a, .header-actions a, .cta-actions a, .contact-list a, #partner-form button[type=submit], .socials a, .credit a, .footer-col a, .mobile-bar a, .wa-bubble a, .nav-desktop a';
+      for (const el of document.querySelectorAll(sel)) {
+        let r = el.getBoundingClientRect(); if (r.width < 1 || getComputedStyle(el).visibility === 'hidden') continue;
+        const fixed = el.closest('.site-header, .mobile-bar, .wa-bubble');
+        if (!fixed) { scrollTo({ top: r.top + scrollY - innerHeight / 2 + r.height / 2, behavior: 'instant' }); await new Promise((q) => setTimeout(q, 80)); }
+        r = el.getClientRects()[0] || el.getBoundingClientRect();   // first line box (links can wrap)
+        const x = r.left + r.width / 2, y = r.top + r.height / 2; info.n++;
+        const top = document.elementFromPoint(x, y);
+        if (!(top === el || el.contains(top))) info.misses.push((el.textContent || el.getAttribute('aria-label') || el.className).trim().slice(0, 24) + ' -> ' + (top ? top.tagName + '.' + top.className : 'null'));
+      }
+      return info;
+    });
+    ok(`${tag} fixed 3D layer: position fixed, z-index < 0, pointer-events none, before content`, hit.pos === 'fixed' && +hit.z < 0 && hit.pe === 'none' && hit.cpe !== 'auto' && hit.first === 'before-main', JSON.stringify(hit));
+    ok(`${tag} every CTA/link is hit-testable at its centre (${hit.n} checked)`, hit.misses.length === 0 && hit.n >= 10, hit.misses.join(' | '));
     const tr = await page.evaluate(TRANSFORMS);
     ok(`${tag} no lingering transforms after reveal`, tr.bad.length === 0, tr.bad.join(' | '));
     ok(`${tag} all revealed content fully visible`, tr.hiddenReveal.length === 0, tr.hiddenReveal.join(','));
@@ -171,7 +211,7 @@ for (const T of TARGETS) {
         return { hidden: menu.hidden, top: r.top, h: Math.round(r.height), vh: innerHeight, w: Math.round(r.width), vw: innerWidth, onTop, inHeader: !!menu.closest('.site-header') };
       });
       ok(`${tag} menu opened mid-page covers the full viewport`, !m.hidden && m.top === 0 && Math.abs(m.h - m.vh) <= 1 && m.w === m.vw && m.onTop && !m.inHeader, JSON.stringify(m));
-      if (SHOTS && mode === 'default') await page.screenshot({ path: path.join(ROOT, `screens/v2/${T.id === 'pixel7' ? 'android' : T.id === 'iphone14' ? 'mobile' : T.id}-menu.png`) });
+      if (SHOTS && mode === 'default') await page.screenshot({ path: path.join(ROOT, `screens/v3/${T.id === 'pixel7' ? 'android' : T.id === 'iphone14' ? 'mobile' : T.id}-menu.png`) });
       await page.keyboard.press('Escape'); await sleep(200);
       ok(`${tag} menu closes with Escape`, await page.evaluate(() => document.getElementById('menu').hidden));
     }

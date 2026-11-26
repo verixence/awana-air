@@ -67,7 +67,7 @@ const PROBE = () => {
 };
 const TRANSFORMS = () => {
   const bad = [];
-  document.querySelectorAll('main *, footer *, .site-header, .mobile-bar, .wa-bubble *').forEach((el) => {
+  document.querySelectorAll('main *, footer *, .site-header, .wa-bubble *').forEach((el) => {
     if (el.closest('canvas') || el.tagName === 'CANVAS' || el.closest('.sky')) return;
     const t = getComputedStyle(el).transform;
     if (t && t !== 'none') bad.push((el.className || el.tagName) + ' ' + t);
@@ -156,10 +156,11 @@ for (const T of TARGETS) {
     // contact affordances
     const ca = await page.evaluate(() => ({
       bubble: getComputedStyle(document.querySelector('.wa-bubble')).display !== 'none',
-      bar: getComputedStyle(document.querySelector('.mobile-bar')).display !== 'none',
+      bar: !!document.querySelector('.mobile-bar'),
       heroCtas: document.querySelectorAll('.hero-content a, .hero-content button').length,
+      fixedBottom: [...document.querySelectorAll('body *')].some((el) => { const cs = getComputedStyle(el); const r = el.getBoundingClientRect(); return cs.position === 'fixed' && cs.display !== 'none' && r.bottom >= innerHeight - 2 && r.top > innerHeight * 0.7 && !el.closest('.skip'); }),
     }));
-    ok(`${tag} one contact affordance (${T.mobile ? 'bar only' : 'bubble only'})`, T.mobile ? ca.bar && !ca.bubble : ca.bubble && !ca.bar, JSON.stringify(ca));
+    ok(`${tag} ${T.mobile ? 'no fixed bottom bar on mobile' : 'desktop WhatsApp bubble only'}`, T.mobile ? !ca.bar && !ca.bubble && !ca.fixedBottom : ca.bubble && !ca.bar, JSON.stringify(ca));
     ok(`${tag} hero has at most 2 CTAs`, ca.heroCtas <= 2, ca.heroCtas);
 
     // step scroll: overlap + header occlusion at every 400px step
@@ -173,10 +174,10 @@ for (const T of TARGETS) {
       const sky = document.getElementById('sky'); const cs = getComputedStyle(sky);
       const cv = sky.querySelector('canvas');
       const info = { pos: cs.position, z: cs.zIndex, pe: cs.pointerEvents, cpe: cv ? getComputedStyle(cv).pointerEvents : 'n/a', first: sky.compareDocumentPosition(document.getElementById('main')) & Node.DOCUMENT_POSITION_FOLLOWING ? 'before-main' : 'after-main', misses: [], n: 0 };
-      const sel = '.hero-ctas a, .header-actions a, .cta-actions a, .contact-list a, #partner-form button[type=submit], .socials a, .credit a, .footer-col a, .mobile-bar a, .wa-bubble a, .nav-desktop a';
+      const sel = '.hero-ctas a, .header-actions a, .cta-actions a, .contact-list a, #partner-form button[type=submit], .socials a, .credit a, .footer-col a, .wa-bubble a, .nav-desktop a, .contact-card';
       for (const el of document.querySelectorAll(sel)) {
         let r = el.getBoundingClientRect(); if (r.width < 1 || getComputedStyle(el).visibility === 'hidden') continue;
-        const fixed = el.closest('.site-header, .mobile-bar, .wa-bubble');
+        const fixed = el.closest('.site-header, .wa-bubble');
         if (!fixed) { scrollTo({ top: r.top + scrollY - innerHeight / 2 + r.height / 2, behavior: 'instant' }); await new Promise((q) => setTimeout(q, 80)); }
         r = el.getClientRects()[0] || el.getBoundingClientRect();   // first line box (links can wrap)
         const x = r.left + r.width / 2, y = r.top + r.height / 2; info.n++;
@@ -207,7 +208,7 @@ for (const T of TARGETS) {
       const m = await page.evaluate(() => {
         const menu = document.getElementById('menu'); const r = menu.getBoundingClientRect();
         const pts = [[innerWidth / 2, innerHeight / 2], [20, innerHeight * 0.3], [innerWidth - 20, innerHeight * 0.75]];
-        const onTop = pts.every(([x, y]) => { const el = document.elementFromPoint(x, y); return el && (el.closest('#menu') || el.closest('.site-header') || el.closest('.mobile-bar')); });
+        const onTop = pts.every(([x, y]) => { const el = document.elementFromPoint(x, y); return el && (el.closest('#menu') || el.closest('.site-header')); });
         return { hidden: menu.hidden, top: r.top, h: Math.round(r.height), vh: innerHeight, w: Math.round(r.width), vw: innerWidth, onTop, inHeader: !!menu.closest('.site-header') };
       });
       ok(`${tag} menu opened mid-page covers the full viewport`, !m.hidden && m.top === 0 && Math.abs(m.h - m.vh) <= 1 && m.w === m.vw && m.onTop && !m.inHeader, JSON.stringify(m));

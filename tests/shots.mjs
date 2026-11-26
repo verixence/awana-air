@@ -23,7 +23,7 @@ for (const [name, type, opts] of T) {
   await p.screenshot({ path: `${OUT}/${name}-hero-viewport.png` });
   await p.evaluate(async () => { for (let y = 0; y < document.documentElement.scrollHeight; y += 300) { scrollTo(0, y); await new Promise((r) => setTimeout(r, 90)); } scrollTo(0, 0); });
   await sleep(1500);
-  await p.addStyleTag({ content: '.site-header,.mobile-bar,.wa-bubble{visibility:hidden!important}' });
+  await p.addStyleTag({ content: '.site-header,.wa-bubble{visibility:hidden!important}' });
   for (const [s, sel] of SECTIONS) {
     if (s === 'form') { await p.fill('#f-name', 'Asha Rao'); await p.fill('#f-business', 'Skyline Tours & Travels'); await p.selectOption('#f-type', 'Tour & travel agency'); await p.fill('#f-city', 'Jaipur'); await p.selectOption('#f-service', 'Helicopter Charters'); await p.click('#partner-form button[type=submit]'); }
     const loc = p.locator(sel).first();
